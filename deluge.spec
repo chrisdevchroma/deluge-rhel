@@ -1,6 +1,6 @@
 Name:		deluge
 Version:	1.3.1
-Release:	1%{?dist}
+Release:	2%{?dist}
 Summary:	A GTK+ BitTorrent client with support for DHT, UPnP, and PEX
 Group:		Applications/Internet
 License:	GPLv3 with exceptions
@@ -143,6 +143,9 @@ fi
 
 
 %changelog
+* Tue Feb 08 2011 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.3.1-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_15_Mass_Rebuild
+
 * Tue Dec 21 2010 Peter Gordon <peter@thecodergeek.com> - 1.3.1
 - Update to new upstream bug-fix release (1.3.1).
 - Resolves: #659953 (Deluge hangs on exit)
