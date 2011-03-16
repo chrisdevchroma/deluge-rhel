@@ -1,41 +1,38 @@
-%{!?python_sitelib: %global python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
-%{!?python_sitearch: %global python_sitearch %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib(1)")}
+%if ! (0%{?fedora} > 12 || 0%{?rhel} > 5)
+%{!?python_sitelib: %global python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")}
+%{!?python_sitearch: %global python_sitearch %(%{__python} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib(1))")}
+%endif
 
-Name:		deluge
-Version:	1.3.0
-Release:	1%{?dist}
-Summary:	A GTK+ BitTorrent client with support for DHT, UPnP, and PEX
-Group:		Applications/Internet
-License:	GPLv3 with exceptions
-URL:		http://deluge-torrent.org/           
-
-Source0:	http://download.deluge-torrent.org/source/%{version}/%{name}-%{version}.tar.lzma
-
+Name:           deluge
+Version:        1.3.1
+Release:        2%{?dist}
+Summary:        A GTK+ BitTorrent client with support for DHT, UPnP, and PEX
+Group:          Applications/Internet
+License:        GPLv3 with exceptions
+URL:            http://deluge-torrent.org/           
+Source0:        http://download.deluge-torrent.org/source/%{name}-%{version}.tar.lzma
 ## The scalable icon needs to be installed to the proper place.
-Patch0: 	%{name}-scalable-icon-dir.diff
+Source1:        deluge-daemon-init
+Patch0:         %{name}-scalable-icon-dir.diff
 ## Add P2P to the Categories in the .desktop file (#615984).
-Patch1: 	%{name}-desktop-categories-p2p.diff
+Patch1:         %{name}-desktop-categories-p2p.diff
 
-BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-BuildArch:	noarch
+BuildArch:     noarch
+BuildRequires: desktop-file-utils
+BuildRequires: python-devel
+BuildRequires: python-setuptools
 
-BuildRequires:	desktop-file-utils
-BuildRequires:	python-devel
-BuildRequires:	python-setuptools
+## add Requires to make into Meta package
+Requires: %{name}-common = %{version}-%{release}
+Requires: %{name}-gtk = %{version}-%{release}
+Requires: %{name}-images = %{version}-%{release}
+Requires: %{name}-console = %{version}-%{release}
+Requires: %{name}-web = %{version}-%{release}
+Requires: %{name}-daemon = %{version}-%{release}
 
-Requires:	gnome-python2-gnome
-## Required for the proper ownership of icon dirs.
-Requires:	hicolor-icon-theme
-Requires:	notify-python
-Requires:	pyOpenSSL
-Requires:	pygtk2-libglade
-Requires:	python-chardet
-Requires:	python-mako
-Requires:	python-setuptools
-Requires:	python-simplejson
-Requires:	python-twisted-web
-Requires:	pyxdg
-Requires:	rb_libtorrent-python
+# removal of flags
+Provides:  deluge-flags = %{version}-%{release}
+Obsoletes: deluge-flags < 1.3.1-3
 
 %description
 Deluge is a new BitTorrent client, created using Python and GTK+. It is
@@ -45,20 +42,78 @@ environments such as GNOME and XFCE. It supports features such as DHT
 (Universal Plug-n-Play) that allow one to more easily share BitTorrent data
 even from behind a router with virtually zero configuration of port-forwarding.
 
+%package common
+Summary:    Files common to Deluge sub packages
+Group:      Applications/Internet
+License:    GPLv3 with exceptions
+Requires:   python-setuptools
+Requires:   pyOpenSSL
+Requires:   python-chardet
+Requires:   python-simplejson
+Requires:   pyxdg
+Requires:   rb_libtorrent-python
+Requires:   python-twisted-web
+%description common
+Common files needed by the Deluge bittorrent client sub packages
 
-%package	flags
-Summary:	Country flags for peer location display in Deluge
-Group:		Applications/Internet
-License:	GPLv3
-Requires:	%{name} = %{version}-%{release}
+%package gtk
+Summary:    The gtk UI to Deluge
+Group:      Applications/Internet
+License:    GPLv3 with exceptions
+Requires:   %{name}-common = %{version}-%{release}
+Requires:   %{name}-images = %{version}-%{release}
+Requires:   %{name}-daemon = %{version}-%{release}
+Requires:   gnome-python2-gnome
+## Required for the proper ownership of icon dirs.
+Requires:   hicolor-icon-theme
+Requires:   notify-python
+Requires:   pygtk2-libglade
+%description gtk
+Deluge bittorent client GTK graphical user interface
 
-%description	flags
-The %{name}-flags package contains optional country flags which are used to
-display the location of peers in the "Peers" information tab.
+%package images
+Summary:    Image files for deluge
+Group:      Applications/Internet
+License:    GPLv3 with exceptions
+%description images
+Data files used by the GTK and web user interface for the Deluge bittorent client
 
+%package console
+Summary:    CLI to Deluge
+Group:      Applications/Internet
+License:    GPLv3 with exceptions
+Requires:   %{name}-common = %{version}-%{release}
+Requires:   %{name}-daemon = %{version}-%{release}
+%description console
+Deluge bittorent client command line interface
+
+%package web
+Summary:    Web interface to Deluge
+Group:      Applications/Internet
+License:    GPLv3 with exceptions
+Requires:   python-mako
+Requires:   %{name}-common = %{version}-%{release}
+Requires:   %{name}-images = %{version}-%{release}
+Requires:   %{name}-daemon = %{version}-%{release}
+%description web
+Deluge bittorent client web interface
+
+%package daemon
+Summary:    The Deluge daemon
+Group:      Applications/Internet
+License:    GPLv3 with exceptions
+Requires:   %{name}-common = %{version}-%{release}
+Requires(pre): shadow-utils
+Requires(post): chkconfig
+Requires(preun): chkconfig
+Requires(preun): initscripts
+Requires(postun): initscripts
+
+%description daemon
+Files for the Deluge daemon
 
 %prep
-%setup -qn "%{name}-%{version}"
+%setup -q
 %patch0 -p0 -b .fix-scalable-icon-dir
 %patch1 -p0 -b .desktop-categories-add-p2p
 
@@ -68,15 +123,20 @@ CFLAGS="%{optflags}" %{__python} setup.py build
 
 
 %install
-rm -rf %{buildroot}
-%{__python} setup.py install -O1 --skip-build --root %{buildroot}
-desktop-file-install --vendor fedora			\
-	--dir %{buildroot}%{_datadir}/applications	\
-	--copy-name-to-generic-name			\
-	--add-mime-type=application/x-bittorrent	\
-	--delete-original				\
-	--remove-category=Application			\
-	%{buildroot}%{_datadir}/applications/%{name}.desktop
+rm -rf $RPM_BUILD_ROOT
+mkdir -p %{buildroot}%{_initddir}
+install -m755 %{SOURCE1} %{buildroot}%{_initddir}/%{name}-daemon
+mkdir -p %{buildroot}/var/lib/%{name}
+
+%{__python} setup.py install -O1 --skip-build --root %{buildroot} 
+
+desktop-file-install --vendor fedora            \
+    --dir %{buildroot}%{_datadir}/applications    \
+    --copy-name-to-generic-name            \
+    --add-mime-type=application/x-bittorrent    \
+    --delete-original                \
+    --remove-category=Application            \
+    %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 ## NOTE: The lang files should REEEAALLLY be in a standard place such as
 ##       /usr/share/locale or similar. It'd make things so much nicer for
@@ -85,72 +145,145 @@ desktop-file-install --vendor fedora			\
 ## find-lang.sh (part of the rpm-build package) and tweaked somewhat. We
 ## cannot (unfortunately) call find-lang directly since it's not on a
 ## "$PREFIX/share/locale/"-ish directory tree.
-pushd %{buildroot}
-	find -type f -o -type l \
-		| sed '
-			s:%{buildroot}%{python_sitelib}::
-			s:^\.::
-			s:\(.*/deluge/i18n/\)\([^/_]\+\)\(.*\.mo$\):%lang(\2) \1\2\3:
-			s:^\([^%].*\)::
-			s:%lang(C) ::
-			/^$/d' \
-	> %{name}.filelist
 
-## We've got the .mo files now; but we need the rest of the files in those
-## dirs. We can't just glob in the %%files, as that would add duplicate
-## entries for the .mo files which we've already marked with appropriate
-## %%lang-fu. 
-	find ./%{python_sitelib}/%{name} -not -iname '%{name}.mo' -type f \
-		| grep -v 'pixmaps/flags' | sed -e 's:^\./::' -e 's| |*|g' >> %{name}.filelist
-	find ./%{python_sitelib}/%{name} -type d  | grep -v 'pixmaps/flags' \
-		| sed 's:^\./:%%dir :' >> %{name}.filelist
+pushd %{buildroot}
+    find -type f -o -type l \
+        | sed '
+            s:%{buildroot}%{python_sitelib}::
+            s:^\.::
+            s:\(.*/deluge/i18n/\)\([^/_]\+\)\(.*\.mo$\):%lang(\2) \1\2\3:
+            s:^\([^%].*\)::
+            s:%lang(C) ::
+            /^$/d' \
+    > %{name}.lang
 
 ## Now we move that list back to our sources, so that '%%files -f' can find it
 ## properly.
-popd && mv %{buildroot}/%{name}.filelist .
+popd && mv %{buildroot}/%{name}.lang .
 
 
-%clean
-rm -rf %{buildroot}
+#fix non exec script errors in two files
+for lib in "%{buildroot}%{python_sitelib}/%{name}/ui/web/gen_gettext.py" "%{buildroot}%{python_sitelib}/%{name}/ui/Win32IconImagePlugin.py" ; do
+ sed '/\/usr\/bin/d' $lib > $lib.new &&
+ touch -r $lib $lib.new &&
+ mv $lib.new $lib
+done
 
+%files
+%defattr(-,root,root,-)
 
-%files -f %{name}.filelist
+%files common -f %{name}.lang
 %defattr(-,root,root,-)
 %doc ChangeLog LICENSE README
-%{python_sitelib}/%{name}-%{version}-py2.?.egg-info/
-%{_bindir}/%{name}
-%{_bindir}/%{name}-console
-%{_bindir}/%{name}-gtk
-%{_bindir}/%{name}-web
-%{_bindir}/%{name}d
-%{_datadir}/applications/fedora-%{name}.desktop
-%{_datadir}/pixmaps/%{name}.*
-%{_datadir}/icons/hicolor/*/apps/%{name}.*
-%{_mandir}/man?/%{name}*
+%{python_sitelib}/%{name}-%{version}-py?.?.egg-info/
 
-%files	flags
+%dir %{python_sitelib}/%{name}
+%{python_sitelib}/%{name}/*.py*
+%{python_sitelib}/%{name}/plugins
+%{python_sitelib}/%{name}/core
+
+%dir %{python_sitelib}/%{name}/ui
+%{python_sitelib}/%{name}/ui/*.py*
+
+# includes %%name.pot too
+%dir %{python_sitelib}/%{name}/i18n
+%dir %{python_sitelib}/%{name}/i18n/*
+%dir %{python_sitelib}/%{name}/i18n/*/LC_MESSAGES
+
+%files images
 %defattr(-,root,root,-)
-%doc LICENSE
-%{python_sitelib}/%{name}/data/pixmaps/flags/
+# only pixmaps dir is in data so I own it all
+%{python_sitelib}/%{name}/data
+# if someone decides to only install images
+%dir %{python_sitelib}/%{name}
+%{_datadir}/icons/hicolor/*/apps/%{name}.*
+%{_datadir}/pixmaps/%{name}.*
+
+%files gtk
+%defattr(-,root,root,-)
+%{_bindir}/%{name}
+%{_bindir}/%{name}-gtk
+%{_datadir}/applications/fedora-%{name}.desktop
+%{python_sitelib}/%{name}/ui/gtkui
+%{_mandir}/man?/%{name}-gtk*
+%{_mandir}/man?/%{name}.1*
+
+%files console
+%defattr(-,root,root,-)
+%{_bindir}/%{name}-console
+%{python_sitelib}/%{name}/ui/console
+%{_mandir}/man?/%{name}-console*
+
+%files web
+%defattr(-,root,root,-)
+%{_bindir}/%{name}-web
+%{python_sitelib}/%{name}/ui/web
+%{_mandir}/man?/%{name}-web*
+
+%files daemon
+%defattr(-,root,root,-)
+%{_bindir}/%{name}d
+%{_initddir}/%{name}-daemon
+%attr(-,%{name}, %{name})/var/lib/%{name}/
+%{_mandir}/man?/%{name}d*
+
+%pre daemon
+getent group %{name} >/dev/null || groupadd -r %{name}
+getent passwd %{name} >/dev/null || \
+useradd -r -g %{name} -d /var/lib/%{name} -s /sbin/nologin \
+        -c "deluge daemon account" %{name}
+exit 0
 
 
-%post
-update-desktop-database &>/dev/null ||:
-touch --no-create %{_datadir}/icons/hicolor
-if [ -x %{_bindir}/gtk-update-icon-cache ]; then
-	%{_bindir}/gtk-update-icon-cache --quiet %{_datadir}/icons/hicolor ||:
+%post daemon
+/sbin/chkconfig --add %{name}-daemon
+
+%post gtk
+update-desktop-database &> /dev/null || :
+
+%post images
+touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
+
+%preun daemon
+if [ $1 = 0 ] ; then
+    /sbin/service %{name}-daemon stop >/dev/null 2>&1
+    /sbin/chkconfig --del %{name}-daemon
 fi
 
-
-%postun
-update-desktop-database &> /dev/null ||:
-touch --no-create %{_datadir}/icons/hicolor
-if [ -x %{_bindir}/gtk-update-icon-cache ]; then
-	%{_bindir}/gtk-update-icon-cache --quiet %{_datadir}/icons/hicolor ||:
+%postun daemon
+if [ "$1" -ge "1" ] ; then
+    /sbin/service %{name}-daemon condrestart >/dev/null 2>&1 || :
 fi
 
+%postun gtk
+update-desktop-database &> /dev/null || :
+
+%postun images
+if [ $1 -eq 0 ] ; then
+    touch --no-create %{_datadir}/icons/hicolor &>/dev/null
+    gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
+fi
+
+%posttrans images
+gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 %changelog
+* Fri Feb 11 2011 Rahul Sundaram <sundaram@fedoraproject.org> - 1.3.1-2
+- Build split up packages, merging changes from Ankur Sinha
+- Add init script for the deluge daemon. Resolves rhbz#537387
+
+* Mon Dec 27 2010 Ankur Sinha <ankursinha AT fedoraproject DOT org> - 1.3.1-1
+- update to latest upstream release
+- Moved icon update scriptlets to -images
+- Moved python-mako requires to -web
+
+* Fri Oct 29 2010 Ankur Sinha <ankursinha AT fedoraproject DOT org> - 1.3.0-3
+- correct License and check file ownerships
+- updated icon cache scriplet
+
+* Thu Oct 28 2010 Ankur Sinha <ankursinha AT fedoraproject DOT org> - 1.3.0-2
+- Split into sub packages #603906
+
 * Wed Oct 13 2010 Peter Gordon <peter@thecodergeek.com> - 1.3.0-1
 - Update to new upstream release (1.3.0).
 - Add P2P to the .desktop file Categories list.
