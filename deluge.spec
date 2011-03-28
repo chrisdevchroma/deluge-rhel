@@ -5,29 +5,30 @@
 
 Name:           deluge
 Version:        1.3.1
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        A GTK+ BitTorrent client with support for DHT, UPnP, and PEX
 Group:          Applications/Internet
 License:        GPLv3 with exceptions
 URL:            http://deluge-torrent.org/           
 Source0:        http://download.deluge-torrent.org/source/%{name}-%{version}.tar.lzma
 ## The scalable icon needs to be installed to the proper place.
+Source1:        deluge-daemon-init
 Patch0:         %{name}-scalable-icon-dir.diff
 ## Add P2P to the Categories in the .desktop file (#615984).
 Patch1:         %{name}-desktop-categories-p2p.diff
 
-BuildArch:      noarch
-BuildRequires:      desktop-file-utils
-BuildRequires:      python-devel
-BuildRequires:      python-setuptools
+BuildArch:     noarch
+BuildRequires: desktop-file-utils
+BuildRequires: python-devel
+BuildRequires: python-setuptools
 
 ## add Requires to make into Meta package
-Requires:         %{name}-common = %{version}-%{release}
-Requires:         %{name}-gtk = %{version}-%{release}
-Requires:         %{name}-images = %{version}-%{release}
-Requires:         %{name}-console = %{version}-%{release}
-Requires:         %{name}-web = %{version}-%{release}
-Requires:         %{name}-daemon = %{version}-%{release}
+Requires: %{name}-common = %{version}-%{release}
+Requires: %{name}-gtk = %{version}-%{release}
+Requires: %{name}-images = %{version}-%{release}
+Requires: %{name}-console = %{version}-%{release}
+Requires: %{name}-web = %{version}-%{release}
+Requires: %{name}-daemon = %{version}-%{release}
 
 # removal of flags
 Provides:         deluge-flags = %{version}-%{release}
@@ -41,7 +42,6 @@ environments such as GNOME and XFCE. It supports features such as DHT
 (Universal Plug-n-Play) that allow one to more easily share BitTorrent data
 even from behind a router with virtually zero configuration of port-forwarding.
 
-## Summaries etc. to be changed as per maintainer requirements
 %package common
 Summary:    Files common to Deluge sub packages
 Group:      Applications/Internet
@@ -54,7 +54,7 @@ Requires:   pyxdg
 Requires:   rb_libtorrent-python
 Requires:   python-twisted-web
 %description common
-These are common files needed by the Deluge sub packages
+Common files needed by the Deluge bittorrent client sub packages
 
 %package gtk
 Summary:    The gtk UI to Deluge
@@ -69,14 +69,14 @@ Requires:   hicolor-icon-theme
 Requires:   notify-python
 Requires:   pygtk2-libglade
 %description gtk
-Files for the Deluge Gtk GUI
+Deluge bittorent client GTK graphical user interface
 
 %package images
 Summary:    Image files for deluge
 Group:      Applications/Internet
 License:    GPLv3 with exceptions
 %description images
-These are data files used by the Gtk and Web UIs
+Data files used by the GTK and web user interface for Deluge bittorent client
 
 %package console
 Summary:    CLI to Deluge
@@ -85,7 +85,7 @@ License:    GPLv3 with exceptions
 Requires:   %{name}-common = %{version}-%{release}
 Requires:   %{name}-daemon = %{version}-%{release}
 %description console
-Files for the Deluge CLI
+Deluge bittorent client command line interface
 
 %package web
 Summary:    Web interface to Deluge
@@ -96,13 +96,19 @@ Requires:   %{name}-common = %{version}-%{release}
 Requires:   %{name}-images = %{version}-%{release}
 Requires:   %{name}-daemon = %{version}-%{release}
 %description web
-Files for the Deluge Web interface
+Deluge bittorent client web interface
 
 %package daemon
 Summary:    The Deluge daemon
 Group:      Applications/Internet
 License:    GPLv3 with exceptions
 Requires:   %{name}-common = %{version}-%{release}
+Requires(pre): shadow-utils
+Requires(post): chkconfig
+Requires(preun): chkconfig
+Requires(preun): initscripts
+Requires(postun): initscripts
+
 %description daemon
 Files for the Deluge daemon
 
@@ -117,6 +123,11 @@ CFLAGS="%{optflags}" %{__python} setup.py build
 
 
 %install
+rm -rf $RPM_BUILD_ROOT
+mkdir -p %{buildroot}%{_initddir}
+install -m755 %{SOURCE1} %{buildroot}%{_initddir}/%{name}-daemon
+mkdir -p %{buildroot}/var/lib/%{name}
+
 %{__python} setup.py install -O1 --skip-build --root %{buildroot} 
 
 desktop-file-install --vendor fedora            \
@@ -212,13 +223,37 @@ done
 %files daemon
 %defattr(-,root,root,-)
 %{_bindir}/%{name}d
+%{_initddir}/%{name}-daemon
+%attr(-,%{name}, %{name})/var/lib/%{name}/
 %{_mandir}/man?/%{name}d*
+
+%pre daemon
+getent group %{name} >/dev/null || groupadd -r %{name}
+getent passwd %{name} >/dev/null || \
+useradd -r -g %{name} -d /var/lib/%{name} -s /sbin/nologin \
+        -c "deluge daemon account" %{name}
+exit 0
+
+
+%post daemon
+/sbin/chkconfig --add %{name}-daemon
 
 %post gtk
 update-desktop-database &> /dev/null || :
 
 %post images
 touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
+
+%preun daemon
+if [ $1 = 0 ] ; then
+    /sbin/service %{name}-daemon stop >/dev/null 2>&1
+    /sbin/chkconfig --del %{name}-daemon
+fi
+
+%postun daemon
+if [ "$1" -ge "1" ] ; then
+    /sbin/service %{name}-daemon condrestart >/dev/null 2>&1 || :
+fi
 
 %postun gtk
 update-desktop-database &> /dev/null || :
@@ -233,6 +268,10 @@ fi
 gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 %changelog
+* Mon Mar 28 2011 Rahul Sundaram <sundaram@fedoraproject.org> - 1.3.1-5
+- Add init script for the deluge daemon. Resolves rhbz#537387
+- Rewrite package descriptions to be better
+
 * Fri Feb 11 2011 Rahul Sundaram <sundaram@fedoraproject.org> - 1.3.1-4
 - Build split up packages
 
