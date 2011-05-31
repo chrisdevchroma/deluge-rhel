@@ -1,11 +1,6 @@
-%if ! (0%{?fedora} > 12 || 0%{?rhel} > 5)
-%{!?python_sitelib: %global python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")}
-%{!?python_sitearch: %global python_sitearch %(%{__python} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib(1))")}
-%endif
-
 Name:           deluge
-Version:        1.3.1
-Release:        5%{?dist}
+Version:        1.3.2
+Release:        1%{?dist}
 Summary:        A GTK+ BitTorrent client with support for DHT, UPnP, and PEX
 Group:          Applications/Internet
 License:        GPLv3 with exceptions
@@ -14,8 +9,6 @@ Source0:        http://download.deluge-torrent.org/source/%{name}-%{version}.tar
 ## The scalable icon needs to be installed to the proper place.
 Source1:        deluge-daemon-init
 Patch0:         %{name}-scalable-icon-dir.diff
-## Add P2P to the Categories in the .desktop file (#615984).
-Patch1:         %{name}-desktop-categories-p2p.diff
 
 BuildArch:     noarch
 BuildRequires: desktop-file-utils
@@ -115,20 +108,17 @@ Files for the Deluge daemon
 %prep
 %setup -q
 %patch0 -p0 -b .fix-scalable-icon-dir
-%patch1 -p0 -b .desktop-categories-add-p2p
-
 
 %build
 CFLAGS="%{optflags}" %{__python} setup.py build
 
-
 %install
-rm -rf $RPM_BUILD_ROOT
+rm -rf %{buildroot}
 mkdir -p %{buildroot}%{_initddir}
 install -m755 %{SOURCE1} %{buildroot}%{_initddir}/%{name}-daemon
 mkdir -p %{buildroot}/var/lib/%{name}
 
-%{__python} setup.py install -O1 --skip-build --root %{buildroot} 
+%{__python} setup.py install -O1 --skip-build --root %{buildroot}
 
 desktop-file-install --vendor fedora            \
     --dir %{buildroot}%{_datadir}/applications    \
@@ -168,6 +158,13 @@ for lib in "%{buildroot}%{python_sitelib}/%{name}/ui/web/gen_gettext.py" "%{buil
  touch -r $lib $lib.new &&
  mv $lib.new $lib
 done
+
+#Removing unneeded .order files.
+rm -f %{buildroot}%{python_sitelib}/%{name}/ui/web/js/deluge-all/.order
+rm -f %{buildroot}%{python_sitelib}/%{name}/ui/web/js/deluge-all/add/.order
+rm -f %{buildroot}%{python_sitelib}/%{name}/ui/web/js/deluge-all/data/.order
+rm -f %{buildroot}%{python_sitelib}/%{name}/ui/web/js/deluge-all/.build
+rm -f ${buildroot}%{python_sitelib}/%{name}/ui/web/js/deluge-all/.build_data
 
 %files
 %defattr(-,root,root,-)
@@ -268,6 +265,12 @@ fi
 gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 %changelog
+* Mon May 30 2011 Justin Noah <justinnoah@gmail.com> - 1.3.2-1
+- Update to latest upstream release
+- http://dev.deluge-torrent.org/wiki/ReleaseNotes/1.3.2
+- Dropped unnecessary patch concerning deluge.dektop categories
+- Remove hidden files created by webui buid and compression
+
 * Mon Mar 28 2011 Rahul Sundaram <sundaram@fedoraproject.org> - 1.3.1-5
 - Add init script for the deluge daemon. Resolves rhbz#537387
 - Rewrite package descriptions to be better
