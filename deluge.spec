@@ -6,7 +6,6 @@ Group:          Applications/Internet
 License:        GPLv3 with exceptions
 URL:            http://deluge-torrent.org/           
 Source0:        http://download.deluge-torrent.org/source/%{name}-%{version}.tar.lzma
-## The scalable icon needs to be installed to the proper place.
 Source1:        deluge-daemon-init
 
 BuildArch:     noarch
@@ -266,7 +265,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 * Fri Jul 22 2011 Rahul Sundaram <sundaram@fedoraproject.org> - 1.3.2-1
 - Update to latest upstream release
 - http://dev.deluge-torrent.org/wiki/ReleaseNotes/1.3.2
-- Dropped unnecessary patch concerning deluge.dektop categories
+- Dropped unnecessary patch concerning deluge.desktop categories
 - Remove hidden files created by webui buid and compression
 
 * Fri Feb 11 2011 Rahul Sundaram <sundaram@fedoraproject.org> - 1.3.1-2
