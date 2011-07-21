@@ -8,7 +8,6 @@ URL:            http://deluge-torrent.org/
 Source0:        http://download.deluge-torrent.org/source/%{name}-%{version}.tar.lzma
 ## The scalable icon needs to be installed to the proper place.
 Source1:        deluge-daemon-init
-Patch0:         %{name}-scalable-icon-dir.diff
 
 BuildArch:     noarch
 BuildRequires: desktop-file-utils
