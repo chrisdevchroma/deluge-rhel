@@ -192,6 +192,7 @@ rm -f ${buildroot}%{python_sitelib}/%{name}/ui/web/js/deluge-all/.build_data
 %dir %{python_sitelib}/%{name}
 %{_datadir}/icons/hicolor/*/apps/%{name}.*
 %{_datadir}/pixmaps/%{name}.*
+%{_datadir}/icons/scalable/apps/%{name}.svg
 
 %files gtk
 %defattr(-,root,root,-)
