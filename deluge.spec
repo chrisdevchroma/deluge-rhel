@@ -1,5 +1,5 @@
 Name:           deluge
-Version:        1.3.2
+Version:        1.3.3
 Release:        1%{?dist}
 Summary:        A GTK+ BitTorrent client with support for DHT, UPnP, and PEX
 Group:          Applications/Internet
@@ -12,6 +12,7 @@ BuildArch:     noarch
 BuildRequires: desktop-file-utils
 BuildRequires: python-devel
 BuildRequires: python-setuptools
+BuildRequires: intltool
 
 ## add Requires to make into Meta package
 Requires: %{name}-common = %{version}-%{release}
@@ -110,7 +111,6 @@ Files for the Deluge daemon
 CFLAGS="%{optflags}" %{__python} setup.py build
 
 %install
-rm -rf %{buildroot}
 mkdir -p %{buildroot}%{_initddir}
 install -m755 %{SOURCE1} %{buildroot}%{_initddir}/%{name}-daemon
 mkdir -p %{buildroot}/var/lib/%{name}
@@ -164,10 +164,9 @@ rm -f %{buildroot}%{python_sitelib}/%{name}/ui/web/js/deluge-all/.build
 rm -f ${buildroot}%{python_sitelib}/%{name}/ui/web/js/deluge-all/.build_data
 
 %files
-%defattr(-,root,root,-)
+
 
 %files common -f %{name}.lang
-%defattr(-,root,root,-)
 %doc ChangeLog LICENSE README
 %{python_sitelib}/%{name}-%{version}-py?.?.egg-info/
 
@@ -185,7 +184,6 @@ rm -f ${buildroot}%{python_sitelib}/%{name}/ui/web/js/deluge-all/.build_data
 %dir %{python_sitelib}/%{name}/i18n/*/LC_MESSAGES
 
 %files images
-%defattr(-,root,root,-)
 # only pixmaps dir is in data so I own it all
 %{python_sitelib}/%{name}/data
 # if someone decides to only install images
@@ -195,7 +193,6 @@ rm -f ${buildroot}%{python_sitelib}/%{name}/ui/web/js/deluge-all/.build_data
 %{_datadir}/icons/scalable/apps/%{name}.svg
 
 %files gtk
-%defattr(-,root,root,-)
 %{_bindir}/%{name}
 %{_bindir}/%{name}-gtk
 %{_datadir}/applications/fedora-%{name}.desktop
@@ -204,19 +201,16 @@ rm -f ${buildroot}%{python_sitelib}/%{name}/ui/web/js/deluge-all/.build_data
 %{_mandir}/man?/%{name}.1*
 
 %files console
-%defattr(-,root,root,-)
 %{_bindir}/%{name}-console
 %{python_sitelib}/%{name}/ui/console
 %{_mandir}/man?/%{name}-console*
 
 %files web
-%defattr(-,root,root,-)
 %{_bindir}/%{name}-web
 %{python_sitelib}/%{name}/ui/web
 %{_mandir}/man?/%{name}-web*
 
 %files daemon
-%defattr(-,root,root,-)
 %{_bindir}/%{name}d
 %{_initddir}/%{name}-daemon
 %attr(-,%{name}, %{name})/var/lib/%{name}/
@@ -263,6 +257,12 @@ fi
 gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 %changelog
+* Mon Aug 15 2011 Rahul Sundaram <sundaram@fedoraproject.org> - 1.3.3-1
+- New upstream release
+- http://dev.deluge-torrent.org/wiki/ReleaseNotes/1.3.3
+- Drop defattr
+- Add build requires on intltool
+
 * Fri Jul 22 2011 Rahul Sundaram <sundaram@fedoraproject.org> - 1.3.2-1
 - Update to latest upstream release
 - http://dev.deluge-torrent.org/wiki/ReleaseNotes/1.3.2
