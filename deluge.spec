@@ -1,13 +1,14 @@
 Name:           deluge
-Version:        1.3.3
-Release:        2%{?dist}
+Version:        1.3.5
+Release:        1%{?dist}
 Summary:        A GTK+ BitTorrent client with support for DHT, UPnP, and PEX
 Group:          Applications/Internet
 License:        GPLv3 with exceptions
 URL:            http://deluge-torrent.org/           
 Source0:        http://download.deluge-torrent.org/source/%{name}-%{version}.tar.lzma
 ## The scalable icon needs to be installed to the proper place.
-Source1:        deluge-daemon-init
+Source1:        deluge-daemon.service
+Source2:        deluge-web.service
 Patch0:         %{name}-scalable-icon-dir.diff
 
 BuildArch:     noarch
@@ -15,6 +16,7 @@ BuildRequires: desktop-file-utils
 BuildRequires: python-devel
 BuildRequires: python-setuptools
 BuildRequires: intltool
+BuildRequires: rb_libtorrent-python
 
 ## add Requires to make into Meta package
 Requires: %{name}-common = %{version}-%{release}
@@ -89,6 +91,7 @@ Requires:   python-mako
 Requires:   %{name}-common = %{version}-%{release}
 Requires:   %{name}-images = %{version}-%{release}
 Requires:   %{name}-daemon = %{version}-%{release}
+Requires:   %{name}-gtk = %{version}-%{release}
 %description web
 Deluge bittorent client web interface
 
@@ -98,10 +101,10 @@ Group:      Applications/Internet
 License:    GPLv3 with exceptions
 Requires:   %{name}-common = %{version}-%{release}
 Requires(pre): shadow-utils
-Requires(post): chkconfig
-Requires(preun): chkconfig
-Requires(preun): initscripts
-Requires(postun): initscripts
+Requires(post): systemd-units
+Requires(preun): systemd-units
+Requires(postun): systemd-units
+Requires(post): systemd-sysv
 
 %description daemon
 Files for the Deluge daemon
@@ -114,8 +117,9 @@ Files for the Deluge daemon
 CFLAGS="%{optflags}" %{__python} setup.py build
 
 %install
-mkdir -p %{buildroot}%{_initddir}
-install -m755 %{SOURCE1} %{buildroot}%{_initddir}/%{name}-daemon
+mkdir -p %{buildroot}%{_unitdir}
+install -m644 %{SOURCE1} %{buildroot}%{_unitdir}/%{name}-daemon.service
+install -m644 %{SOURCE2} %{buildroot}%{_unitdir}/%{name}-web.service
 mkdir -p %{buildroot}/var/lib/%{name}
 
 %{__python} setup.py install -O1 --skip-build --root %{buildroot}
@@ -210,10 +214,11 @@ rm -f ${buildroot}%{python_sitelib}/%{name}/ui/web/js/deluge-all/.build_data
 %{_bindir}/%{name}-web
 %{python_sitelib}/%{name}/ui/web
 %{_mandir}/man?/%{name}-web*
+%{_unitdir}/%{name}-web.service
 
 %files daemon
 %{_bindir}/%{name}d
-%{_initddir}/%{name}-daemon
+%{_unitdir}/%{name}-daemon.service
 %attr(-,%{name}, %{name})/var/lib/%{name}/
 %{_mandir}/man?/%{name}d*
 
@@ -226,7 +231,16 @@ exit 0
 
 
 %post daemon
-/sbin/chkconfig --add %{name}-daemon
+if [ $1 -eq 1 ] ; then 
+    # Initial installation 
+    /bin/systemctl daemon-reload >/dev/null 2>&1 || :
+fi
+
+%post web
+if [ $1 -eq 1 ] ; then 
+    # Initial installation 
+    /bin/systemctl daemon-reload >/dev/null 2>&1 || :
+fi
 
 %post gtk
 update-desktop-database &> /dev/null || :
@@ -235,14 +249,32 @@ update-desktop-database &> /dev/null || :
 touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
 
 %preun daemon
-if [ $1 = 0 ] ; then
-    /sbin/service %{name}-daemon stop >/dev/null 2>&1
-    /sbin/chkconfig --del %{name}-daemon
+if [ $1 -eq 0 ] ; then
+    # Package removal, not upgrade
+    /bin/systemctl --no-reload disable deluge-daemon.service > /dev/null 2>&1 || :
+    /bin/systemctl stop deluge-daemon.service > /dev/null 2>&1 || :
 fi
 
+%preun web
+if [ $1 -eq 0 ] ; then
+    # Package removal, not upgrade
+    /bin/systemctl --no-reload disable deluge-web.service > /dev/null 2>&1 || :
+    /bin/systemctl stop deluge-web.service > /dev/null 2>&1 || :
+fi
+
+
 %postun daemon
-if [ "$1" -ge "1" ] ; then
-    /sbin/service %{name}-daemon condrestart >/dev/null 2>&1 || :
+/bin/systemctl daemon-reload >/dev/null 2>&1 || :
+if [ $1 -ge 1 ] ; then
+    # Package upgrade, not uninstall
+    /bin/systemctl try-restart deluge-daemon.service >/dev/null 2>&1 || :
+fi
+
+%postun web
+/bin/systemctl daemon-reload >/dev/null 2>&1 || :
+if [ $1 -ge 1 ] ; then
+    # Package upgrade, not uninstall
+    /bin/systemctl try-restart deluge-web.service >/dev/null 2>&1 || :
 fi
 
 %postun gtk
@@ -257,7 +289,22 @@ fi
 %posttrans images
 gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
+%triggerun -- deluge-daemon < 1.3.5-1
+# Save the current service runlevel info
+# User must manually run systemd-sysv-convert --apply deluge-daemon
+# to migrate them to systemd targets
+/usr/bin/systemd-sysv-convert --save deluge-daemon >/dev/null 2>&1 ||:
+
+# Run these because the SysV package being removed won't do them
+/sbin/chkconfig --del deluge-daemon >/dev/null 2>&1 || :
+/bin/systemctl try-restart deluge-daemon.service >/dev/null 2>&1 || :
+
 %changelog
+* Tue Jul 03 2012 Jon Ciesla <limburgher@gmail.com> - 1.3.5-1
+- Latest upstream.
+- Added rb_libtorrent-python BuildRequires to ensure use of system libtorrent.
+- Migrate to systemd, BZ 790182.
+
 * Fri Jan 13 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.3.3-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_17_Mass_Rebuild
 
