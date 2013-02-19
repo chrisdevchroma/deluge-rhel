@@ -1,6 +1,6 @@
 Name:           deluge
 Version:        1.3.5
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        A GTK+ BitTorrent client with support for DHT, UPnP, and PEX
 Group:          Applications/Internet
 License:        GPLv3 with exceptions
@@ -124,7 +124,10 @@ mkdir -p %{buildroot}/var/lib/%{name}
 
 %{__python} setup.py install -O1 --skip-build --root %{buildroot}
 
-desktop-file-install --vendor fedora            \
+desktop-file-install  \
+%if 0%{?fedora} && 0%{?fedora} < 19
+    --vendor fedora            \
+%endif
     --dir %{buildroot}%{_datadir}/applications    \
     --copy-name-to-generic-name            \
     --add-mime-type=application/x-bittorrent    \
@@ -200,7 +203,11 @@ rm -f ${buildroot}%{python_sitelib}/%{name}/ui/web/js/deluge-all/.build_data
 %files gtk
 %{_bindir}/%{name}
 %{_bindir}/%{name}-gtk
+%if 0%{?fedora} && 0%{?fedora} < 19
 %{_datadir}/applications/fedora-%{name}.desktop
+%else
+%{_datadir}/applications/%{name}.desktop
+%endif
 %{python_sitelib}/%{name}/ui/gtkui
 %{_mandir}/man?/%{name}-gtk*
 %{_mandir}/man?/%{name}.1*
@@ -300,6 +307,9 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 /bin/systemctl try-restart deluge-daemon.service >/dev/null 2>&1 || :
 
 %changelog
+* Mon Feb 18 2013 Toshio Kuratomi <toshio@fedoraproject.org> - 1.3.5-4
+- Remove --vendor from desktop-file-install https://fedorahosted.org/fesco/ticket/1077
+
 * Wed Feb 13 2013 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.3.5-3
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_19_Mass_Rebuild
 
