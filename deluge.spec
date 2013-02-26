@@ -1,5 +1,5 @@
 Name:           deluge
-Version:        1.3.5
+Version:        1.3.6
 Release:        1%{?dist}
 Summary:        A GTK+ BitTorrent client with support for DHT, UPnP, and PEX
 Group:          Applications/Internet
@@ -259,6 +259,10 @@ fi
 gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 %changelog
+* Tue Feb 26 2013 Rahul Sundaram <sundaram@fedoraproject.org> - 1.3.6-1
+- upstream release 1.3.6
+- http://dev.deluge-torrent.org/wiki/ReleaseNotes/1.3.6
+
 * Thu Jul 19 2012 Jon Ciesla <limburgher@gmail.com> - 1.3.5-1
 - Latest upstream.
 - Added rb_libtorrent-python BuildRequires to ensure use of system libtorrent.
