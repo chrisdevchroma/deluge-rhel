@@ -1,6 +1,6 @@
 Name:           deluge
 Version:        1.3.6
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A GTK+ BitTorrent client with support for DHT, UPnP, and PEX
 Group:          Applications/Internet
 License:        GPLv3 with exceptions
@@ -45,10 +45,13 @@ License:    GPLv3 with exceptions
 Requires:   python-setuptools
 Requires:   pyOpenSSL
 Requires:   python-chardet
-Requires:   python-simplejson
 Requires:   pyxdg
 Requires:   rb_libtorrent-python
 Requires:   python-twisted-web
+Requires:   pygame
+Requires:   python-GeoIP
+Requires:   python-setproctitle
+
 %description common
 Common files needed by the Deluge bittorrent client sub packages
 
@@ -59,7 +62,6 @@ License:    GPLv3 with exceptions
 Requires:   %{name}-common = %{version}-%{release}
 Requires:   %{name}-images = %{version}-%{release}
 Requires:   %{name}-daemon = %{version}-%{release}
-Requires:   gnome-python2-gnome
 ## Required for the proper ownership of icon dirs.
 Requires:   hicolor-icon-theme
 Requires:   notify-python
@@ -277,6 +279,12 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 /bin/systemctl try-restart deluge-daemon.service >/dev/null 2>&1 || :
 
 %changelog
+* Thu May 09 2013 Rahul Sundaram <sundaram@fedoraproject.org> - 1.3.6-2
+- drop dependency on gnome-python2-gnome. resolves rhbz#961541
+- drop dependency on python-simplejson
+- add dependency on pygame, python-GeoIP and python-setproctitle
+- fix old bogus date in changelog
+
 * Mon Feb 25 2013 Rahul Sundaram <sundaram@fedoraproject.org> - 1.3.6-1
 - upstream release 1.3.6
 - http://dev.deluge-torrent.org/wiki/ReleaseNotes/1.3.6
@@ -615,7 +623,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 * Wed Dec 05 2007 Release Engineering <rel-eng at fedoraproject dot org> - 0.5.7-2
 - Rebuild for deps
 
-* Tue Nov 24 2007 Peter Gordon <peter@thecodergeek.com> - 0.5.7-1
+* Sat Nov 24 2007 Peter Gordon <peter@thecodergeek.com> - 0.5.7-1
 - Update to new upstream release (0.5.7)
 
 * Sat Nov 24 2007 Peter Gordon <peter@thecodergeek.com> - 0.5.6.96-1
