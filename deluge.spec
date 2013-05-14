@@ -1,6 +1,6 @@
 Name:           deluge
 Version:        1.3.6
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        A GTK+ BitTorrent client with support for DHT, UPnP, and PEX
 Group:          Applications/Internet
 License:        GPLv3 with exceptions
@@ -17,6 +17,7 @@ BuildRequires: python-devel
 BuildRequires: python-setuptools
 BuildRequires: intltool
 BuildRequires: rb_libtorrent-python
+BuildRequires: python-rencode
 
 ## add Requires to make into Meta package
 Requires: %{name}-common = %{version}-%{release}
@@ -113,12 +114,18 @@ Files for the Deluge daemon
 
 %prep
 %setup -q
+# http://dev.deluge-torrent.org/ticket/2327
 %patch0 -p0 -b .fix-scalable-icon-dir
+
+# remove bundled copy of python-rencode
+# http://dev.deluge-torrent.org/ticket/2326
+rm -f build/lib/deluge/rencode.py
 
 %build
 CFLAGS="%{optflags}" %{__python} setup.py build
 
 %install
+# http://dev.deluge-torrent.org/ticket/2034
 mkdir -p %{buildroot}%{_unitdir}
 install -m644 %{SOURCE1} %{buildroot}%{_unitdir}/%{name}-daemon.service
 install -m644 %{SOURCE2} %{buildroot}%{_unitdir}/%{name}-web.service
@@ -279,6 +286,11 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 /bin/systemctl try-restart deluge-daemon.service >/dev/null 2>&1 || :
 
 %changelog
+* Thu May 14 2013 Rahul Sundaram <sundaram@fedoraproject.org> - 1.3.6-3
+- add dependency on newly introduced python-rencode
+- remove bundled copy.  resolves rhbz#953700
+- add references to upstream tickets on systemd, rencode and svg icon location
+
 * Thu May 09 2013 Rahul Sundaram <sundaram@fedoraproject.org> - 1.3.6-2
 - drop dependency on gnome-python2-gnome. resolves rhbz#961541
 - drop dependency on python-simplejson
