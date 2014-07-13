@@ -1,6 +1,6 @@
 Name:           deluge
-Version:        1.3.6
-Release:        5%{?dist}
+Version:        1.3.7
+Release:        1%{?dist}
 Summary:        A GTK+ BitTorrent client with support for DHT, UPnP, and PEX
 Group:          Applications/Internet
 License:        GPLv3 with exceptions
@@ -9,7 +9,6 @@ Source0:        http://download.deluge-torrent.org/source/%{name}-%{version}.tar
 ## The scalable icon needs to be installed to the proper place.
 Source1:        deluge-daemon.service
 Source2:        deluge-web.service
-Patch0:         %{name}-scalable-icon-dir.diff
 
 BuildArch:     noarch
 BuildRequires: desktop-file-utils
@@ -114,8 +113,6 @@ Files for the Deluge daemon
 
 %prep
 %setup -q
-# http://dev.deluge-torrent.org/ticket/2327
-%patch0 -p0 -b .fix-scalable-icon-dir
 
 # remove bundled copy of python-rencode
 # http://dev.deluge-torrent.org/ticket/2326
@@ -286,13 +283,17 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 /bin/systemctl try-restart deluge-daemon.service >/dev/null 2>&1 || :
 
 %changelog
+* Sun Jul 13 2014 Rahul Sundaram <sundaram@fedoraproject.org> - 1.3.7-1
+- update to 1.3.7
+- drop upstream patch to fix icon location
+
 * Sat Jun 07 2014 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.3.6-5
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_21_Mass_Rebuild
 
 * Sat Aug 03 2013 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.3.6-4
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_20_Mass_Rebuild
 
-* Thu May 14 2013 Rahul Sundaram <sundaram@fedoraproject.org> - 1.3.6-3
+* Tue May 14 2013 Rahul Sundaram <sundaram@fedoraproject.org> - 1.3.6-3
 - add dependency on newly introduced python-rencode
 - remove bundled copy.  resolves rhbz#953700
 - add references to upstream tickets on systemd, rencode and svg icon location
