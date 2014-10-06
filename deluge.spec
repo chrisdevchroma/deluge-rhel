@@ -1,12 +1,11 @@
 Name:           deluge
-Version:        1.3.7
+Version:        1.3.9
 Release:        1%{?dist}
 Summary:        A GTK+ BitTorrent client with support for DHT, UPnP, and PEX
 Group:          Applications/Internet
 License:        GPLv3 with exceptions
 URL:            http://deluge-torrent.org/           
-Source0:        http://download.deluge-torrent.org/source/%{name}-%{version}.tar.lzma
-## The scalable icon needs to be installed to the proper place.
+Source0:        http://download.deluge-torrent.org/source/%{name}-%{version}.tar.bz2
 Source1:        deluge-daemon.service
 Source2:        deluge-web.service
 
@@ -26,9 +25,6 @@ Requires: %{name}-console = %{version}-%{release}
 Requires: %{name}-web = %{version}-%{release}
 Requires: %{name}-daemon = %{version}-%{release}
 
-# removal of flags
-Provides:         deluge-flags = %{version}-%{release}
-Obsoletes:        deluge-flags < 1.3.1-3
 
 %description
 Deluge is a new BitTorrent client, created using Python and GTK+. It is
@@ -103,10 +99,10 @@ Group:      Applications/Internet
 License:    GPLv3 with exceptions
 Requires:   %{name}-common = %{version}-%{release}
 Requires(pre): shadow-utils
-Requires(post): systemd-units
-Requires(preun): systemd-units
-Requires(postun): systemd-units
-Requires(post): systemd-sysv
+Requires(post): systemd
+Requires(preun): systemd
+Requires(postun): systemd
+BuildRequires: systemd
 
 %description daemon
 Files for the Deluge daemon
@@ -174,7 +170,11 @@ rm -f %{buildroot}%{python_sitelib}/%{name}/ui/web/js/deluge-all/.order
 rm -f %{buildroot}%{python_sitelib}/%{name}/ui/web/js/deluge-all/add/.order
 rm -f %{buildroot}%{python_sitelib}/%{name}/ui/web/js/deluge-all/data/.order
 rm -f %{buildroot}%{python_sitelib}/%{name}/ui/web/js/deluge-all/.build
-rm -f ${buildroot}%{python_sitelib}/%{name}/ui/web/js/deluge-all/.build_data
+rm -f %{buildroot}%{python_sitelib}/%{name}/ui/web/js/deluge-all/.build_data
+
+#Removing empty file
+rm -rf %{buildroot}%{python_sitelib}/%{name}/ui/web/gen_gettext.py.new
+
 
 %files
 
@@ -272,17 +272,16 @@ fi
 %posttrans images
 gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
-%triggerun -- deluge-daemon < 1.3.5-1
-# Save the current service runlevel info
-# User must manually run systemd-sysv-convert --apply deluge-daemon
-# to migrate them to systemd targets
-/usr/bin/systemd-sysv-convert --save deluge-daemon >/dev/null 2>&1 ||:
-
-# Run these because the SysV package being removed won't do them
-/sbin/chkconfig --del deluge-daemon >/dev/null 2>&1 || :
-/bin/systemctl try-restart deluge-daemon.service >/dev/null 2>&1 || :
-
 %changelog
+* Mon Oct 06 2014 Rahul Sundaram <sundaram@fedoraproject.org> - 1.3.9-1
+- upstream release 1.3.9
+- http://dev.deluge-torrent.org/wiki/ReleaseNotes/1.3.9
+- switch to bz2
+- remove empty file
+- drop old obsoletes and provides
+- drop old sysv transitional changes
+- switch from using systemd-units to systemd
+
 * Sun Jul 13 2014 Rahul Sundaram <sundaram@fedoraproject.org> - 1.3.7-1
 - update to 1.3.7
 - drop upstream patch to fix icon location
