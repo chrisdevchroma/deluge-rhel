@@ -1,6 +1,6 @@
 Name:           deluge
 Version:        1.3.11
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A GTK+ BitTorrent client with support for DHT, UPnP, and PEX
 Group:          Applications/Internet
 License:        GPLv3 with exceptions
@@ -8,6 +8,8 @@ URL:            http://deluge-torrent.org/
 Source0:        http://download.deluge-torrent.org/source/%{name}-%{version}.tar.bz2
 Source1:        deluge-daemon.service
 Source2:        deluge-web.service
+# Twisted 15 fix from upstream
+Patch1:         deluge-twisted-15.patch
 
 BuildArch:     noarch
 BuildRequires: desktop-file-utils
@@ -109,6 +111,7 @@ Files for the Deluge daemon
 
 %prep
 %setup -q
+%patch1 -p1 -b .twisted
 
 # remove bundled copy of python-rencode
 # http://dev.deluge-torrent.org/ticket/2326
@@ -273,6 +276,9 @@ fi
 gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 %changelog
+* Tue May 19 2015 Michael Cronenworth <mike@cchtml.com> - 1.3.11-2
+- fix compatibility with Twisted 15 (rhbz#1221985)
+
 * Thu Dec 18 2014 Tom Callaway <spot@fedoraproject.org> - 1.3.11-1
 - update to 1.3.11
 
