@@ -1,6 +1,6 @@
 Name:           deluge
 Version:        1.3.11
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        A GTK+ BitTorrent client with support for DHT, UPnP, and PEX
 Group:          Applications/Internet
 License:        GPLv3 with exceptions
@@ -17,7 +17,6 @@ BuildRequires: python-devel
 BuildRequires: python-setuptools
 BuildRequires: intltool
 BuildRequires: rb_libtorrent-python
-BuildRequires: python-rencode
 
 ## add Requires to make into Meta package
 Requires: %{name}-common = %{version}-%{release}
@@ -49,6 +48,7 @@ Requires:   python-twisted-web
 Requires:   pygame
 Requires:   python-GeoIP
 Requires:   python-setproctitle
+Requires:   python-rencode
 
 %description common
 Common files needed by the Deluge bittorrent client sub packages
@@ -115,7 +115,7 @@ Files for the Deluge daemon
 
 # remove bundled copy of python-rencode
 # http://dev.deluge-torrent.org/ticket/2326
-rm -f build/lib/deluge/rencode.py
+rm -f deluge/rencode.py
 
 %build
 CFLAGS="%{optflags}" %{__python} setup.py build
@@ -276,6 +276,9 @@ fi
 gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 %changelog
+* Sun Jun 14 2015 Michael Cronenworth <mike@cchtml.com> - 1.3.11-3
+- Fix unbundling attempt of rencode (rhbz#953700)
+
 * Tue May 19 2015 Michael Cronenworth <mike@cchtml.com> - 1.3.11-2
 - fix compatibility with Twisted 15 (rhbz#1221985)
 
