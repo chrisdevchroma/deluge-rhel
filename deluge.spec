@@ -1,6 +1,6 @@
 Name:           deluge
 Version:        1.3.11
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        A GTK+ BitTorrent client with support for DHT, UPnP, and PEX
 Group:          Applications/Internet
 License:        GPLv3 with exceptions
@@ -10,6 +10,8 @@ Source1:        deluge-daemon.service
 Source2:        deluge-web.service
 # Twisted 15 fix from upstream
 Patch1:         deluge-twisted-15.patch
+# Prevent crashes in Create Torrent dialog for non-English languages
+Patch2:         deluge-createtorrentdialog.patch
 
 BuildArch:     noarch
 BuildRequires: desktop-file-utils
@@ -112,6 +114,7 @@ Files for the Deluge daemon
 %prep
 %setup -q
 %patch1 -p1 -b .twisted
+%patch2 -p1 -b .createtorrentdialog
 
 # remove bundled copy of python-rencode
 # http://dev.deluge-torrent.org/ticket/2326
@@ -276,6 +279,9 @@ fi
 gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 %changelog
+* Fri Aug 21 2015 Michael Cronenworth <mike@cchtml.com> - 1.3.11-5
+- Fix crash for non-C locales on creating torrents (rhbz#1224261)
+
 * Wed Jun 17 2015 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.3.11-4
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_23_Mass_Rebuild
 
