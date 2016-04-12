@@ -1,0 +1,34 @@
+From 58059300bde65f0b45c6177b123e6957c3c814d5 Mon Sep 17 00:00:00 2001
+From: Calum Lind <calumlind+deluge@gmail.com>
+Date: Sun, 20 Sep 2015 15:19:32 +0100
+Subject: [#2763] [GTKUI] Fix unhandled error with invalid magnet uri
+
+---
+ deluge/ui/gtkui/addtorrentdialog.py | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/deluge/ui/gtkui/addtorrentdialog.py b/deluge/ui/gtkui/addtorrentdialog.py
+index 195ac60..8b8d9c5 100644
+--- a/deluge/ui/gtkui/addtorrentdialog.py
++++ b/deluge/ui/gtkui/addtorrentdialog.py
+@@ -251,12 +251,16 @@ class AddTorrentDialog(component.Component):
+ 
+         for uri in uris:
+             s = uri.split("&")[0][20:]
++            info_hash = None
+             if len(s) == 32:
+                 info_hash = base64.b32decode(s).encode("hex")
+             elif len(s) == 40:
+                 info_hash = s
++            if info_hash is None:
++                log.error("Invalid info_hash in uri: %s", uri)
++                continue
+             if info_hash in self.infos:
+-                log.debug("Torrent already in list!")
++                log.debug("Torrent already in list: %s", uri)
+                 continue
+             name = None
+             for i in uri.split("&"):
+-- 
+cgit v0.12
+
