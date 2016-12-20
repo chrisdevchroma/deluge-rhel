@@ -1,10 +1,10 @@
 Name:           deluge
 Version:        1.3.13
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A GTK+ BitTorrent client with support for DHT, UPnP, and PEX
 Group:          Applications/Internet
 License:        GPLv3 with exceptions
-URL:            http://deluge-torrent.org/           
+URL:            http://deluge-torrent.org/
 Source0:        http://download.deluge-torrent.org/source/%{name}-%{version}.tar.bz2
 Source1:        deluge-daemon.service
 Source2:        deluge-web.service
@@ -64,6 +64,7 @@ Requires:   %{name}-daemon = %{version}-%{release}
 Requires:   hicolor-icon-theme
 Requires:   notify-python
 Requires:   pygtk2-libglade
+
 %description gtk
 Deluge bittorent client GTK graphical user interface
 
@@ -91,7 +92,7 @@ Requires:   python-mako
 Requires:   %{name}-common = %{version}-%{release}
 Requires:   %{name}-images = %{version}-%{release}
 Requires:   %{name}-daemon = %{version}-%{release}
-Requires:   %{name}-gtk = %{version}-%{release}
+
 %description web
 Deluge bittorent client web interface
 
@@ -183,16 +184,14 @@ rm -rf %{buildroot}%{python_sitelib}/%{name}/ui/web/gen_gettext.py.new
 
 %files common -f %{name}.lang
 %doc ChangeLog LICENSE README
-%{python_sitelib}/%{name}-%{version}-py?.?.egg-info/
 
+%{python_sitelib}/%{name}-%{version}-py?.?.egg-info/
 %dir %{python_sitelib}/%{name}
 %{python_sitelib}/%{name}/*.py*
 %{python_sitelib}/%{name}/plugins
 %{python_sitelib}/%{name}/core
-
 %dir %{python_sitelib}/%{name}/ui
 %{python_sitelib}/%{name}/ui/*.py*
-
 # includes %%name.pot too
 %dir %{python_sitelib}/%{name}/i18n
 %dir %{python_sitelib}/%{name}/i18n/*
@@ -258,7 +257,7 @@ touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
 %systemd_preun deluge-web.service
 
 %postun daemon
-%systemd_postun_with_restart deluge-daemon.service 
+%systemd_postun_with_restart deluge-daemon.service
 
 %postun web
 %systemd_postun_with_restart deluge-web.service
@@ -276,6 +275,9 @@ fi
 gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 %changelog
+* Mon Dec 19 2016 Michael Cronenworth <mike@cchtml.com> - 1.3.13-2
+- Remove dependency on gtk for web subpackage (rhbz#1365920)
+
 * Wed Jul 20 2016 Michael Cronenworth <mike@cchtml.com> - 1.3.13-1
 - update to 1.3.13
 
@@ -421,7 +423,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 * Sat Feb 27 2010 Peter Gordon <peter@thecodergeek.com> - 1.2.1-1
 - Update to new upstream bug-fix release (1.2.1)
-- Add python-mako dependency to fix WebUI startup crash. 
+- Add python-mako dependency to fix WebUI startup crash.
 - Resolves: #568845 (missing dependency to python-mako)
 
 * Sat Jan 16 2010 Peter Gordon <peter@thecodergeek.com> - 1.2.0-1
@@ -505,7 +507,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 - Update to new upstream release (1.1.0 Final - yay!)
 - Drop the get_tracker_host patch (fixed upstream):
   - fix-get_tracker-host-if-no-tracker.patch
-  
+
 * Fri Jan 09 2009 Peter Gordon <peter@thecodergeek.com> - 1.1.0-0.4.rc3
 - Do not package the country flags data.
 - Resolves: #479265 (country flags should not be used in Deluge)
@@ -552,7 +554,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 - Update to new upstream release (1.0.5)
 
 * Fri Oct 31 2008 Peter Gordon <peter@thecodergeek.com> - 1.0.4-1
-- Update to new upstream release (1.0.4). 
+- Update to new upstream release (1.0.4).
 
 * Fri Oct 24 2008 Peter Gordon <peter@thecodergeek.com> - 1.0.3-1
 - Update to new upstream release (1.0.3)
@@ -561,7 +563,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 - Update to new upstream release (1.0.2)
 - Drop multithreaded boost compilation patch (fixed upstream, again).
   - mt-boost-fix.patch
-  
+
 * Sat Sep 27 2008 Peter Gordon <peter@thecodergeek.com> - 1.0.0-1
 - Update to new upstream release (1.0.0 Final)
 - Apply patch from Mamoru Tasaka to build against the multi-threaded Boost
@@ -653,7 +655,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 - Update to new upstream release (0.5.8)
 - Merge Mamoru Tasaka's no-release-notification patch into the default-prefs
   patch.
-  
+
 * Sat Dec 29 2007 Mamoru Tasaka <mtasaka@ioa.s.u-tokyo.ac.jp> - 0.5.7.98-1
 - Update to new upstream release candidate (0.5.8 RC2)
 
@@ -757,7 +759,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 * Sun Apr 08 2007 Peter Gordon <peter@thecodergeek.com> - 0.5.0-2
 - Make Deluge the upgrade path of the now-orphaned python-libtorrent package.
-  
+
 * Mon Mar 12 2007 Peter Gordon <peter@thecodergeek.com> - 0.5.0-1
 - Update to new upstream release (0.5.0).
 
@@ -766,14 +768,14 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 - Drop IndexError exception-handling fix (applied upstream):
   - delugegtk.py-fix-IndexError-exception-handling.patch
 - Use the system libtool instead of the one from the sources to ensure
-  that no unnecessary RPATH hacks are added to the final build. 
+  that no unnecessary RPATH hacks are added to the final build.
 
 * Wed Mar 07 2007 Peter Gordon <peter@thecodergeek.com> - 0.4.99.1-3
 - Add a patch (submitted upstream) to properly catch a thrown IndexError in
   state message updates. This should resolve the bug wherein the UI stops
   updating its details and torrent listing.
   + delugegtk.py-fix-IndexError-exception-handling.patch
-  
+
 * Wed Mar 07 2007 Peter Gordon <peter@thecodergeek.com> - 0.4.99.1-2
 - Drop unneeded 64bit-python_long patch; as it seems to cause more trouble than
   it's worth. Instead, pass -DAMD64 as a compiler flag on 64-bit arches.
@@ -810,7 +812,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 * Fri Feb 23 2007 Peter Gordon <peter@thecodergeek.com> - 0.4.1-6
 - Fix Source0 URL.
 
-* Wed Feb 21 2007 Peter Gordon <peter@thecodergeek.com> - 0.4.1-5 
+* Wed Feb 21 2007 Peter Gordon <peter@thecodergeek.com> - 0.4.1-5
 - Make notify-python dependency conditional (FC6+ only)
 - Strip the unneeded shebang lines from the plugin scripts, since they are not
   meant to be directly executed.
@@ -832,4 +834,4 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
   64-bit systems.
 
 * Wed Jan 03 2007 Peter Gordon <peter@thecodergeek.com> - 0.4.1-1
-- Initial packaging for Fedora Extras. 
+- Initial packaging for Fedora Extras.
