@@ -1,6 +1,6 @@
 Name:           deluge
 Version:        1.3.13
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        A GTK+ BitTorrent client with support for DHT, UPnP, and PEX
 Group:          Applications/Internet
 License:        GPLv3 with exceptions
@@ -275,6 +275,9 @@ fi
 gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 %changelog
+* Fri Feb 10 2017 Fedora Release Engineering <releng@fedoraproject.org> - 1.3.13-3
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_26_Mass_Rebuild
+
 * Mon Dec 19 2016 Michael Cronenworth <mike@cchtml.com> - 1.3.13-2
 - Remove dependency on gtk for web subpackage (rhbz#1365920)
 
