@@ -1,6 +1,6 @@
 Name:           deluge
 Version:        1.3.13
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        A GTK+ BitTorrent client with support for DHT, UPnP, and PEX
 Group:          Applications/Internet
 License:        GPLv3 with exceptions
@@ -13,8 +13,8 @@ Patch1:         deluge-createtorrentdialog.patch
 
 BuildArch:     noarch
 BuildRequires: desktop-file-utils
-BuildRequires: python-devel
-BuildRequires: python-setuptools
+BuildRequires: python2-devel
+BuildRequires: python2-setuptools
 BuildRequires: intltool
 BuildRequires: rb_libtorrent-python
 
@@ -119,7 +119,7 @@ Files for the Deluge daemon
 rm -f deluge/rencode.py
 
 %build
-CFLAGS="%{optflags}" %{__python} setup.py build
+CFLAGS="%{optflags}" %{__python2} setup.py build
 
 %install
 # http://dev.deluge-torrent.org/ticket/2034
@@ -128,7 +128,7 @@ install -m644 %{SOURCE1} %{buildroot}%{_unitdir}/%{name}-daemon.service
 install -m644 %{SOURCE2} %{buildroot}%{_unitdir}/%{name}-web.service
 mkdir -p %{buildroot}/var/lib/%{name}
 
-%{__python} setup.py install -O1 --skip-build --root %{buildroot}
+%{__python2} setup.py install -O1 --skip-build --root %{buildroot}
 
 desktop-file-install  \
     --dir %{buildroot}%{_datadir}/applications    \
@@ -149,7 +149,7 @@ desktop-file-install  \
 pushd %{buildroot}
     find -type f -o -type l \
         | sed '
-            s:%{buildroot}%{python_sitelib}::
+            s:%{buildroot}%{python2_sitelib}::
             s:^\.::
             s:\(.*/deluge/i18n/\)\([^/_]\+\)\(.*\.mo$\):%lang(\2) \1\2\3:
             s:^\([^%].*\)::
@@ -170,14 +170,14 @@ for lib in "%{buildroot}%{python_sitelib}/%{name}/ui/web/gen_gettext.py" "%{buil
 done
 
 #Removing unneeded .order files.
-rm -f %{buildroot}%{python_sitelib}/%{name}/ui/web/js/deluge-all/.order
-rm -f %{buildroot}%{python_sitelib}/%{name}/ui/web/js/deluge-all/add/.order
-rm -f %{buildroot}%{python_sitelib}/%{name}/ui/web/js/deluge-all/data/.order
-rm -f %{buildroot}%{python_sitelib}/%{name}/ui/web/js/deluge-all/.build
-rm -f %{buildroot}%{python_sitelib}/%{name}/ui/web/js/deluge-all/.build_data
+rm -f %{buildroot}%{python2_sitelib}/%{name}/ui/web/js/deluge-all/.order
+rm -f %{buildroot}%{python2_sitelib}/%{name}/ui/web/js/deluge-all/add/.order
+rm -f %{buildroot}%{python2_sitelib}/%{name}/ui/web/js/deluge-all/data/.order
+rm -f %{buildroot}%{python2_sitelib}/%{name}/ui/web/js/deluge-all/.build
+rm -f %{buildroot}%{python2_sitelib}/%{name}/ui/web/js/deluge-all/.build_data
 
 #Removing empty file
-rm -rf %{buildroot}%{python_sitelib}/%{name}/ui/web/gen_gettext.py.new
+rm -rf %{buildroot}%{python2_sitelib}/%{name}/ui/web/gen_gettext.py.new
 
 
 %files
@@ -185,23 +185,23 @@ rm -rf %{buildroot}%{python_sitelib}/%{name}/ui/web/gen_gettext.py.new
 %files common -f %{name}.lang
 %doc ChangeLog LICENSE README
 
-%{python_sitelib}/%{name}-%{version}-py?.?.egg-info/
-%dir %{python_sitelib}/%{name}
-%{python_sitelib}/%{name}/*.py*
-%{python_sitelib}/%{name}/plugins
-%{python_sitelib}/%{name}/core
-%dir %{python_sitelib}/%{name}/ui
-%{python_sitelib}/%{name}/ui/*.py*
+%{python2_sitelib}/%{name}-%{version}-py?.?.egg-info/
+%dir %{python2_sitelib}/%{name}
+%{python2_sitelib}/%{name}/*.py*
+%{python2_sitelib}/%{name}/plugins
+%{python2_sitelib}/%{name}/core
+%dir %{python2_sitelib}/%{name}/ui
+%{python2_sitelib}/%{name}/ui/*.py*
 # includes %%name.pot too
-%dir %{python_sitelib}/%{name}/i18n
-%dir %{python_sitelib}/%{name}/i18n/*
-%dir %{python_sitelib}/%{name}/i18n/*/LC_MESSAGES
+%dir %{python2_sitelib}/%{name}/i18n
+%dir %{python2_sitelib}/%{name}/i18n/*
+%dir %{python2_sitelib}/%{name}/i18n/*/LC_MESSAGES
 
 %files images
 # only pixmaps dir is in data so I own it all
-%{python_sitelib}/%{name}/data
+%{python2_sitelib}/%{name}/data
 # if someone decides to only install images
-%dir %{python_sitelib}/%{name}
+%dir %{python2_sitelib}/%{name}
 %{_datadir}/icons/hicolor/*/apps/%{name}.*
 %{_datadir}/pixmaps/%{name}.*
 
@@ -209,18 +209,18 @@ rm -rf %{buildroot}%{python_sitelib}/%{name}/ui/web/gen_gettext.py.new
 %{_bindir}/%{name}
 %{_bindir}/%{name}-gtk
 %{_datadir}/applications/%{name}.desktop
-%{python_sitelib}/%{name}/ui/gtkui
+%{python2_sitelib}/%{name}/ui/gtkui
 %{_mandir}/man?/%{name}-gtk*
 %{_mandir}/man?/%{name}.1*
 
 %files console
 %{_bindir}/%{name}-console
-%{python_sitelib}/%{name}/ui/console
+%{python2_sitelib}/%{name}/ui/console
 %{_mandir}/man?/%{name}-console*
 
 %files web
 %{_bindir}/%{name}-web
-%{python_sitelib}/%{name}/ui/web
+%{python2_sitelib}/%{name}/ui/web
 %{_mandir}/man?/%{name}-web*
 %{_unitdir}/%{name}-web.service
 
@@ -275,6 +275,9 @@ fi
 gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 %changelog
+* Wed Feb 15 2017 Jon Ciesla <limburgher@gmail.com> - 1.3.13-4
+- Fix python macros.
+
 * Fri Feb 10 2017 Fedora Release Engineering <releng@fedoraproject.org> - 1.3.13-3
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_26_Mass_Rebuild
 
