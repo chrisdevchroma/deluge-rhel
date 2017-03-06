@@ -1,6 +1,6 @@
 Name:           deluge
-Version:        1.3.13
-Release:        4%{?dist}
+Version:        1.3.14
+Release:        1%{?dist}
 Summary:        A GTK+ BitTorrent client with support for DHT, UPnP, and PEX
 Group:          Applications/Internet
 License:        GPLv3 with exceptions
@@ -275,6 +275,9 @@ fi
 gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 %changelog
+* Mon Mar 06 2017 Michael Cronenworth <mike@cchtml.com> - 1.3.14-1
+- Update to 1.3.14
+
 * Wed Feb 15 2017 Jon Ciesla <limburgher@gmail.com> - 1.3.13-4
 - Fix python macros.
 
