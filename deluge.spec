@@ -1,11 +1,11 @@
 Name:           deluge
-Version:        1.3.14
+Version:        1.3.15
 Release:        1%{?dist}
 Summary:        A GTK+ BitTorrent client with support for DHT, UPnP, and PEX
 Group:          Applications/Internet
 License:        GPLv3 with exceptions
 URL:            http://deluge-torrent.org/
-Source0:        http://download.deluge-torrent.org/source/%{name}-%{version}.tar.bz2
+Source0:        http://download.deluge-torrent.org/source/%{name}-%{version}.tar.xz
 Source1:        deluge-daemon.service
 Source2:        deluge-web.service
 # Prevent crashes in Create Torrent dialog for non-English languages
@@ -275,6 +275,9 @@ fi
 gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 %changelog
+* Fri May 12 2017 Michael Cronenworth <mike@cchtml.com> - 1.3.15-1
+- Update to 1.3.15
+
 * Mon Mar 06 2017 Michael Cronenworth <mike@cchtml.com> - 1.3.14-1
 - Update to 1.3.14
 
