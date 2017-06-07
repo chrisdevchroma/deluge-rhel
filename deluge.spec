@@ -1,6 +1,6 @@
 Name:           deluge
 Version:        1.3.15
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A GTK+ BitTorrent client with support for DHT, UPnP, and PEX
 Group:          Applications/Internet
 License:        GPLv3 with exceptions
