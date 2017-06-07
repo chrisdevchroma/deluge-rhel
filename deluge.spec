@@ -10,6 +10,8 @@ Source1:        deluge-daemon.service
 Source2:        deluge-web.service
 # Prevent crashes in Create Torrent dialog for non-English languages
 Patch1:         deluge-createtorrentdialog.patch
+# Upstream: http://dev.deluge-torrent.org/ticket/3039
+Patch2:         deluge-1.3.15-preferences.patch
 
 BuildArch:     noarch
 BuildRequires: desktop-file-utils
@@ -113,6 +115,7 @@ Files for the Deluge daemon
 %prep
 %setup -q
 %patch1 -p1 -b .createtorrentdialog
+%patch2 -p1 -b .preferences
 
 # remove bundled copy of python-rencode
 # http://dev.deluge-torrent.org/ticket/2326
@@ -275,6 +278,9 @@ fi
 gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 %changelog
+* Tue Jun 06 2017 Michael Cronenworth <mike@cchtml.com> - 1.3.15-2
+- Fix preferences dialog
+
 * Fri May 12 2017 Michael Cronenworth <mike@cchtml.com> - 1.3.15-1
 - Update to 1.3.15
 
