@@ -1,6 +1,6 @@
 Name:           deluge
 Version:        1.3.15
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        A GTK+ BitTorrent client with support for DHT, UPnP, and PEX
 Group:          Applications/Internet
 License:        GPLv3 with exceptions
@@ -18,7 +18,7 @@ BuildRequires: desktop-file-utils
 BuildRequires: python2-devel
 BuildRequires: python2-setuptools
 BuildRequires: intltool
-BuildRequires: rb_libtorrent-python
+BuildRequires: rb_libtorrent-python2
 
 ## add Requires to make into Meta package
 Requires: %{name}-common = %{version}-%{release}
@@ -41,16 +41,16 @@ even from behind a router with virtually zero configuration of port-forwarding.
 Summary:    Files common to Deluge sub packages
 Group:      Applications/Internet
 License:    GPLv3 with exceptions
-Requires:   python-setuptools
-Requires:   pyOpenSSL
-Requires:   python-chardet
-Requires:   pyxdg
-Requires:   rb_libtorrent-python
-Requires:   python-twisted-web
-Requires:   pygame
-Requires:   python-GeoIP
-Requires:   python-setproctitle
-Requires:   python-rencode
+Requires:   python2-setuptools
+Requires:   python2-pyOpenSSL
+Requires:   python2-chardet
+Requires:   python2-pyxdg
+Requires:   rb_libtorrent-python2
+Requires:   python2-twisted
+Requires:   python2-pygame
+Requires:   python2-GeoIP
+Requires:   python2-setproctitle
+Requires:   python2-rencode
 
 %description common
 Common files needed by the Deluge bittorrent client sub packages
@@ -64,7 +64,7 @@ Requires:   %{name}-images = %{version}-%{release}
 Requires:   %{name}-daemon = %{version}-%{release}
 ## Required for the proper ownership of icon dirs.
 Requires:   hicolor-icon-theme
-Requires:   notify-python
+Requires:   python2-notify
 Requires:   pygtk2-libglade
 
 %description gtk
@@ -90,7 +90,7 @@ Deluge bittorent client command line interface
 Summary:    Web interface to Deluge
 Group:      Applications/Internet
 License:    GPLv3 with exceptions
-Requires:   python-mako
+Requires:   python2-mako
 Requires:   %{name}-common = %{version}-%{release}
 Requires:   %{name}-images = %{version}-%{release}
 Requires:   %{name}-daemon = %{version}-%{release}
@@ -278,6 +278,9 @@ fi
 gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 %changelog
+* Thu Jan 04 2017 Michael Cronenworth <mike@cchtml.com> - 1.3.15-4
+- Update Python dependency names for new packaging standards
+
 * Wed Jul 26 2017 Fedora Release Engineering <releng@fedoraproject.org> - 1.3.15-3
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_27_Mass_Rebuild
 
