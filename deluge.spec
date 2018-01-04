@@ -278,7 +278,7 @@ fi
 gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 %changelog
-* Thu Jan 04 2017 Michael Cronenworth <mike@cchtml.com> - 1.3.15-4
+* Thu Jan 04 2018 Michael Cronenworth <mike@cchtml.com> - 1.3.15-4
 - Update Python dependency names for new packaging standards
 
 * Wed Jul 26 2017 Fedora Release Engineering <releng@fedoraproject.org> - 1.3.15-3
