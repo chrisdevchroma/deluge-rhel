@@ -1,6 +1,6 @@
 Name:           deluge
 Version:        1.3.15
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        A GTK+ BitTorrent client with support for DHT, UPnP, and PEX
 Group:          Applications/Internet
 License:        GPLv3 with exceptions
@@ -247,12 +247,6 @@ exit 0
 %post web
 %systemd_post deluge-web.service
 
-%post gtk
-update-desktop-database &> /dev/null || :
-
-%post images
-touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
-
 %preun daemon
 %systemd_preun deluge-daemon.service
 
@@ -265,19 +259,10 @@ touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
 %postun web
 %systemd_postun_with_restart deluge-web.service
 
-%postun gtk
-update-desktop-database &> /dev/null || :
-
-%postun images
-if [ $1 -eq 0 ] ; then
-    touch --no-create %{_datadir}/icons/hicolor &>/dev/null
-    gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
-fi
-
-%posttrans images
-gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
-
 %changelog
+* Thu Jan 11 2018 Igor Gnatenko <ignatenkobrain@fedoraproject.org> - 1.3.15-5
+- Remove obsolete scriptlets
+
 * Thu Jan 04 2018 Michael Cronenworth <mike@cchtml.com> - 1.3.15-4
 - Update Python dependency names for new packaging standards
 
