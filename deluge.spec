@@ -1,6 +1,6 @@
 Name:           deluge
 Version:        1.3.15
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        A GTK+ BitTorrent client with support for DHT, UPnP, and PEX
 Group:          Applications/Internet
 License:        GPLv3 with exceptions
@@ -260,6 +260,9 @@ exit 0
 %systemd_postun_with_restart deluge-web.service
 
 %changelog
+* Wed Feb 07 2018 Fedora Release Engineering <releng@fedoraproject.org> - 1.3.15-6
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_28_Mass_Rebuild
+
 * Thu Jan 11 2018 Igor Gnatenko <ignatenkobrain@fedoraproject.org> - 1.3.15-5
 - Remove obsolete scriptlets
 
