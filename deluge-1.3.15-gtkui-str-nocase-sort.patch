@@ -1,3 +1,33 @@
+From b13da8a42a01d3d7e2a71bcae5d9aceecdcb6e82 Mon Sep 17 00:00:00 2001
+From: Calum Lind <calumlind+deluge@gmail.com>
+Date: Sun, 29 Oct 2017 10:46:26 +0000
+Subject: [#3010|GTKUI] Handle unknown OverflowError from twisted reactor
+
+---
+ deluge/ui/gtkui/gtkui.py | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/deluge/ui/gtkui/gtkui.py b/deluge/ui/gtkui/gtkui.py
+index cd6fcc8..eecd026 100644
+--- a/deluge/ui/gtkui/gtkui.py
++++ b/deluge/ui/gtkui/gtkui.py
+@@ -291,7 +291,12 @@ class GtkUI(object):
+         reactor.callWhenRunning(self._on_reactor_start)
+         # Start the gtk main loop
+         gtk.gdk.threads_enter()
+-        reactor.run()
++        try:
++            reactor.run()
++        except OverflowError:
++            # Ticket 3010 reports an error that cannot replicate so catch
++            # it and ignore it to prevent spamming logs.
++            pass
+         self.shutdown()
+         gtk.gdk.threads_leave()
+ 
+-- 
+cgit v1.1
+
 From 396417bcd045c387fd5ee6cae6a18106324a06a4 Mon Sep 17 00:00:00 2001
 From: Calum Lind <calumlind+deluge@gmail.com>
 Date: Sun, 29 Oct 2017 11:12:56 +0000
