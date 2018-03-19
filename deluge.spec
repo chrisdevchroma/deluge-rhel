@@ -1,6 +1,6 @@
 Name:           deluge
 Version:        1.3.15
-Release:        6%{?dist}
+Release:        7%{?dist}
 Summary:        A GTK+ BitTorrent client with support for DHT, UPnP, and PEX
 Group:          Applications/Internet
 License:        GPLv3 with exceptions
@@ -12,6 +12,8 @@ Source2:        deluge-web.service
 Patch1:         deluge-createtorrentdialog.patch
 # Upstream: http://dev.deluge-torrent.org/ticket/3039
 Patch2:         deluge-1.3.15-preferences.patch
+# Upstream: http://git.deluge-torrent.org/deluge/commit/?h=1.3-stable&id=396417bcd045c387fd5ee6cae6a18106324a06a4
+Patch3:         deluge-1.3.15-gtkui-str-nocase-sort.patch
 
 BuildArch:     noarch
 BuildRequires: desktop-file-utils
@@ -116,6 +118,7 @@ Files for the Deluge daemon
 %setup -q
 %patch1 -p1 -b .createtorrentdialog
 %patch2 -p1 -b .preferences
+%patch3 -p1 -b .gtkui
 
 # remove bundled copy of python-rencode
 # http://dev.deluge-torrent.org/ticket/2326
@@ -260,6 +263,9 @@ exit 0
 %systemd_postun_with_restart deluge-web.service
 
 %changelog
+* Mon Mar 19 2018 Michael Cronenworth <mike@cchtml.com> - 1.3.15-7
+- Fix GTK UI bug (rhbz#1558110)
+
 * Wed Feb 07 2018 Fedora Release Engineering <releng@fedoraproject.org> - 1.3.15-6
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_28_Mass_Rebuild
 
