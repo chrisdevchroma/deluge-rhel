@@ -1,6 +1,6 @@
 Name:           deluge
 Version:        1.3.15
-Release:        7%{?dist}
+Release:        8%{?dist}
 Summary:        A GTK+ BitTorrent client with support for DHT, UPnP, and PEX
 Group:          Applications/Internet
 License:        GPLv3 with exceptions
@@ -45,7 +45,11 @@ Group:      Applications/Internet
 License:    GPLv3 with exceptions
 Requires:   python2-setuptools
 Requires:   python2-pyOpenSSL
+%if 0%{?fedora} > 27
 Requires:   python2-chardet
+%else
+Requires:   python-chardet
+%endif
 Requires:   python2-pyxdg
 Requires:   rb_libtorrent-python2
 Requires:   python2-twisted
@@ -53,6 +57,7 @@ Requires:   python2-pygame
 Requires:   python2-GeoIP
 Requires:   python2-setproctitle
 Requires:   python2-rencode
+
 
 %description common
 Common files needed by the Deluge bittorrent client sub packages
@@ -66,7 +71,12 @@ Requires:   %{name}-images = %{version}-%{release}
 Requires:   %{name}-daemon = %{version}-%{release}
 ## Required for the proper ownership of icon dirs.
 Requires:   hicolor-icon-theme
+%if 0%{?fedora} > 27
 Requires:   python2-notify
+%else
+Requires:   notify-python
+
+%endif
 Requires:   pygtk2-libglade
 
 %description gtk
@@ -92,7 +102,11 @@ Deluge bittorent client command line interface
 Summary:    Web interface to Deluge
 Group:      Applications/Internet
 License:    GPLv3 with exceptions
+%if 0%{?fedora} > 27
 Requires:   python2-mako
+%else
+Requires:   python-mako
+%endif
 Requires:   %{name}-common = %{version}-%{release}
 Requires:   %{name}-images = %{version}-%{release}
 Requires:   %{name}-daemon = %{version}-%{release}
@@ -263,6 +277,9 @@ exit 0
 %systemd_postun_with_restart deluge-web.service
 
 %changelog
+* Tue Mar 20 2018 Michael Cronenworth <mike@cchtml.com> - 1.3.15-8
+- Update python dependencies for F28+ only
+
 * Mon Mar 19 2018 Michael Cronenworth <mike@cchtml.com> - 1.3.15-7
 - Fix GTK UI bug (rhbz#1558110)
 
