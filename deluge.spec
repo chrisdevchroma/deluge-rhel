@@ -1,6 +1,6 @@
 Name:           deluge
 Version:        1.3.15
-Release:        8%{?dist}
+Release:        9%{?dist}
 Summary:        A GTK+ BitTorrent client with support for DHT, UPnP, and PEX
 Group:          Applications/Internet
 License:        GPLv3 with exceptions
@@ -47,13 +47,14 @@ Requires:   python2-setuptools
 Requires:   python2-pyOpenSSL
 %if 0%{?fedora} > 27
 Requires:   python2-chardet
+Requires:   python2-pygame
 %else
 Requires:   python-chardet
+Requires:   pygame
 %endif
 Requires:   python2-pyxdg
 Requires:   rb_libtorrent-python2
 Requires:   python2-twisted
-Requires:   python2-pygame
 Requires:   python2-GeoIP
 Requires:   python2-setproctitle
 Requires:   python2-rencode
@@ -277,6 +278,9 @@ exit 0
 %systemd_postun_with_restart deluge-web.service
 
 %changelog
+* Tue Mar 20 2018 Michael Cronenworth <mike@cchtml.com> - 1.3.15-9
+- Update python dependencies for F28+ only
+
 * Tue Mar 20 2018 Michael Cronenworth <mike@cchtml.com> - 1.3.15-8
 - Update python dependencies for F28+ only
 
