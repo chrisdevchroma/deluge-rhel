@@ -2,7 +2,6 @@ Name:           deluge
 Version:        1.3.15
 Release:        11%{?dist}
 Summary:        A GTK+ BitTorrent client with support for DHT, UPnP, and PEX
-Group:          Applications/Internet
 License:        GPLv3 with exceptions
 URL:            http://deluge-torrent.org/
 Source0:        http://download.deluge-torrent.org/source/%{name}-%{version}.tar.xz
@@ -41,7 +40,6 @@ even from behind a router with virtually zero configuration of port-forwarding.
 
 %package common
 Summary:    Files common to Deluge sub packages
-Group:      Applications/Internet
 License:    GPLv3 with exceptions
 Requires:   python2-setuptools
 Requires:   python2-pyOpenSSL
@@ -66,7 +64,6 @@ Common files needed by the Deluge bittorrent client sub packages
 
 %package gtk
 Summary:    The gtk UI to Deluge
-Group:      Applications/Internet
 License:    GPLv3 with exceptions
 Requires:   %{name}-common = %{version}-%{release}
 Requires:   %{name}-images = %{version}-%{release}
@@ -85,14 +82,12 @@ Deluge bittorent client GTK graphical user interface
 
 %package images
 Summary:    Image files for deluge
-Group:      Applications/Internet
 License:    GPLv3 with exceptions
 %description images
 Data files used by the GTK and web user interface for Deluge bittorent client
 
 %package console
 Summary:    CLI to Deluge
-Group:      Applications/Internet
 License:    GPLv3 with exceptions
 Requires:   %{name}-common = %{version}-%{release}
 Requires:   %{name}-daemon = %{version}-%{release}
@@ -101,7 +96,6 @@ Deluge bittorent client command line interface
 
 %package web
 Summary:    Web interface to Deluge
-Group:      Applications/Internet
 License:    GPLv3 with exceptions
 %if 0%{?fedora} > 27
 Requires:   python2-mako
@@ -117,7 +111,6 @@ Deluge bittorent client web interface
 
 %package daemon
 Summary:    The Deluge daemon
-Group:      Applications/Internet
 License:    GPLv3 with exceptions
 Requires:   %{name}-common = %{version}-%{release}
 Requires(pre): shadow-utils
