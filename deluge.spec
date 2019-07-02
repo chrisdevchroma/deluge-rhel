@@ -1,25 +1,22 @@
 Name:           deluge
-Version:        1.3.15
-Release:        12%{?dist}
+Version:        2.0.3
+Release:        1%{?dist}
 Summary:        A GTK+ BitTorrent client with support for DHT, UPnP, and PEX
 License:        GPLv3 with exceptions
 URL:            http://deluge-torrent.org/
-Source0:        http://download.deluge-torrent.org/source/%{name}-%{version}.tar.xz
-Source1:        deluge-daemon.service
-Source2:        deluge-web.service
-# Prevent crashes in Create Torrent dialog for non-English languages
-Patch1:         deluge-createtorrentdialog.patch
-# Upstream: http://dev.deluge-torrent.org/ticket/3039
-Patch2:         deluge-1.3.15-preferences.patch
-# Upstream: http://git.deluge-torrent.org/deluge/commit/?h=1.3-stable&id=396417bcd045c387fd5ee6cae6a18106324a06a4
-Patch3:         deluge-1.3.15-gtkui-str-nocase-sort.patch
+Source0:        https://ftp.osuosl.org/pub/deluge/source/2.0/%{name}-%{version}.tar.xz
+Source1:        https://ftp.osuosl.org/pub/deluge/source/2.0/%{name}-%{version}.tar.xz.sha256
+Source2:        deluge-daemon.service
+Source3:        deluge-web.service
 
 BuildArch:     noarch
 BuildRequires: desktop-file-utils
-BuildRequires: python2-devel
-BuildRequires: python2-setuptools
+BuildRequires: python3-devel
+BuildRequires: python3-setuptools
+BuildRequires: python3-wheel
 BuildRequires: intltool
-BuildRequires: rb_libtorrent-python2
+BuildRequires: rb_libtorrent-python3
+BuildRequires: libappstream-glib
 
 ## add Requires to make into Meta package
 Requires: %{name}-common = %{version}-%{release}
@@ -41,22 +38,16 @@ even from behind a router with virtually zero configuration of port-forwarding.
 %package common
 Summary:    Files common to Deluge sub packages
 License:    GPLv3 with exceptions
-Requires:   python2-setuptools
-Requires:   python2-pyOpenSSL
-%if 0%{?fedora} > 27
-Requires:   python2-chardet
-Requires:   python2-pygame
-Requires:   python2-setproctitle
-%else
-Requires:   python-chardet
-Requires:   pygame
-Requires:   python-setproctitle
-%endif
-Requires:   python2-pyxdg
-Requires:   rb_libtorrent-python2
-Requires:   python2-twisted
-Requires:   python2-GeoIP
-Requires:   python2-rencode
+Requires:   python3-setuptools
+Requires:   python3-pyOpenSSL
+Requires:   python3-chardet
+Requires:   python3-pygame
+Requires:   python3-setproctitle
+Requires:   python3-pyxdg
+Requires:   rb_libtorrent-python3
+Requires:   python3-twisted
+Requires:   python3-GeoIP
+Requires:   python3-rencode
 
 
 %description common
@@ -70,12 +61,11 @@ Requires:   %{name}-images = %{version}-%{release}
 Requires:   %{name}-daemon = %{version}-%{release}
 ## Required for the proper ownership of icon dirs.
 Requires:   hicolor-icon-theme
-%if 0%{?fedora} > 27
-Requires:   python2-notify
-%else
-Requires:   notify-python
-%endif
-Requires:   pygtk2-libglade
+Requires:   gtk3 >= 3.10
+Requires:   python3-cairo
+Requires:   python3-gobject
+Requires:   libappindicator-gtk3
+Requires:   librsvg2
 
 %description gtk
 Deluge bittorent client GTK graphical user interface
@@ -97,11 +87,7 @@ Deluge bittorent client command line interface
 %package web
 Summary:    Web interface to Deluge
 License:    GPLv3 with exceptions
-%if 0%{?fedora} > 27
-Requires:   python2-mako
-%else
-Requires:   python-mako
-%endif
+Requires:   python3-mako
 Requires:   %{name}-common = %{version}-%{release}
 Requires:   %{name}-images = %{version}-%{release}
 Requires:   %{name}-daemon = %{version}-%{release}
@@ -124,25 +110,18 @@ Files for the Deluge daemon
 
 %prep
 %setup -q
-%patch1 -p1 -b .createtorrentdialog
-%patch2 -p1 -b .preferences
-%patch3 -p1 -b .gtkui
-
-# remove bundled copy of python-rencode
-# http://dev.deluge-torrent.org/ticket/2326
-rm -f deluge/rencode.py
 
 %build
-CFLAGS="%{optflags}" %{__python2} setup.py build
+CFLAGS="%{optflags}" %{__python3} setup.py build
 
 %install
 # http://dev.deluge-torrent.org/ticket/2034
 mkdir -p %{buildroot}%{_unitdir}
-install -m644 %{SOURCE1} %{buildroot}%{_unitdir}/%{name}-daemon.service
-install -m644 %{SOURCE2} %{buildroot}%{_unitdir}/%{name}-web.service
+install -m644 %{SOURCE2} %{buildroot}%{_unitdir}/%{name}-daemon.service
+install -m644 %{SOURCE3} %{buildroot}%{_unitdir}/%{name}-web.service
 mkdir -p %{buildroot}/var/lib/%{name}
 
-%{__python2} setup.py install -O1 --skip-build --root %{buildroot}
+%{__python3} setup.py install -O1 --skip-build --root %{buildroot}
 
 desktop-file-install  \
     --dir %{buildroot}%{_datadir}/applications    \
@@ -151,6 +130,11 @@ desktop-file-install  \
     --delete-original                \
     --remove-category=Application            \
     %{buildroot}%{_datadir}/applications/%{name}.desktop
+
+mkdir -p %{buildroot}%{_metainfodir}
+mv %{buildroot}/usr/share/appdata/deluge.appdata.xml %{buildroot}%{_metainfodir}/%{name}.appdata.xml
+rmdir %{buildroot}/usr/share/appdata
+appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 ## NOTE: The lang files should REEEAALLLY be in a standard place such as
 ##       /usr/share/locale or similar. It'd make things so much nicer for
@@ -163,7 +147,7 @@ desktop-file-install  \
 pushd %{buildroot}
     find -type f -o -type l \
         | sed '
-            s:%{buildroot}%{python2_sitelib}::
+            s:%{buildroot}%{python3_sitelib}::
             s:^\.::
             s:\(.*/deluge/i18n/\)\([^/_]\+\)\(.*\.mo$\):%lang(\2) \1\2\3:
             s:^\([^%].*\)::
@@ -175,66 +159,52 @@ pushd %{buildroot}
 ## properly.
 popd && mv %{buildroot}/%{name}.lang .
 
-
-#fix non exec script errors in two files
-for lib in "%{buildroot}%{python_sitelib}/%{name}/ui/web/gen_gettext.py" "%{buildroot}%{python_sitelib}/%{name}/ui/Win32IconImagePlugin.py" ; do
- sed '/\/usr\/bin/d' $lib > $lib.new &&
- touch -r $lib $lib.new &&
- mv $lib.new $lib
-done
-
-#Removing unneeded .order files.
-rm -f %{buildroot}%{python2_sitelib}/%{name}/ui/web/js/deluge-all/.order
-rm -f %{buildroot}%{python2_sitelib}/%{name}/ui/web/js/deluge-all/add/.order
-rm -f %{buildroot}%{python2_sitelib}/%{name}/ui/web/js/deluge-all/data/.order
-rm -f %{buildroot}%{python2_sitelib}/%{name}/ui/web/js/deluge-all/.build
-rm -f %{buildroot}%{python2_sitelib}/%{name}/ui/web/js/deluge-all/.build_data
-
-#Removing empty file
-rm -rf %{buildroot}%{python2_sitelib}/%{name}/ui/web/gen_gettext.py.new
-
-
 %files
 
 %files common -f %{name}.lang
-%doc ChangeLog LICENSE README
+%doc CHANGELOG.md LICENSE README.md
 
-%{python2_sitelib}/%{name}-%{version}-py?.?.egg-info/
-%dir %{python2_sitelib}/%{name}
-%{python2_sitelib}/%{name}/*.py*
-%{python2_sitelib}/%{name}/plugins
-%{python2_sitelib}/%{name}/core
-%dir %{python2_sitelib}/%{name}/ui
-%{python2_sitelib}/%{name}/ui/*.py*
+%{python3_sitelib}/%{name}-%{version}-py?.?.egg-info/
+%dir %{python3_sitelib}/%{name}
+%{python3_sitelib}/%{name}/__pycache__
+%{python3_sitelib}/%{name}/*.py*
+%{python3_sitelib}/%{name}/plugins
+%{python3_sitelib}/%{name}/core
+%dir %{python3_sitelib}/%{name}/ui
+%{python3_sitelib}/%{name}/ui/__pycache__
+%{python3_sitelib}/%{name}/ui/*.py*
 # includes %%name.pot too
-%dir %{python2_sitelib}/%{name}/i18n
-%dir %{python2_sitelib}/%{name}/i18n/*
-%dir %{python2_sitelib}/%{name}/i18n/*/LC_MESSAGES
+%dir %{python3_sitelib}/%{name}/i18n
+%dir %{python3_sitelib}/%{name}/i18n/*
+%dir %{python3_sitelib}/%{name}/i18n/*/LC_MESSAGES
+%{python3_sitelib}/%{name}/i18n/__pycache__/*
+%{python3_sitelib}/%{name}/i18n/*.py
 
 %files images
 # only pixmaps dir is in data so I own it all
-%{python2_sitelib}/%{name}/data
+%{python3_sitelib}/%{name}/ui/data
 # if someone decides to only install images
-%dir %{python2_sitelib}/%{name}
-%{_datadir}/icons/hicolor/*/apps/%{name}.*
+%dir %{python3_sitelib}/%{name}
+%{_datadir}/icons/hicolor/*/apps/%{name}*
 %{_datadir}/pixmaps/%{name}.*
 
 %files gtk
 %{_bindir}/%{name}
 %{_bindir}/%{name}-gtk
 %{_datadir}/applications/%{name}.desktop
-%{python2_sitelib}/%{name}/ui/gtkui
+%{_metainfodir}/%{name}.appdata.xml
+%{python3_sitelib}/%{name}/ui/gtk3
 %{_mandir}/man?/%{name}-gtk*
 %{_mandir}/man?/%{name}.1*
 
 %files console
 %{_bindir}/%{name}-console
-%{python2_sitelib}/%{name}/ui/console
+%{python3_sitelib}/%{name}/ui/console
 %{_mandir}/man?/%{name}-console*
 
 %files web
 %{_bindir}/%{name}-web
-%{python2_sitelib}/%{name}/ui/web
+%{python3_sitelib}/%{name}/ui/web
 %{_mandir}/man?/%{name}-web*
 %{_unitdir}/%{name}-web.service
 
@@ -271,6 +241,9 @@ exit 0
 %systemd_postun_with_restart deluge-web.service
 
 %changelog
+* Tue Jul 02 2019 Michael Cronenworth <mike@cchtml.com> - 2.0.3-1
+- Version update
+
 * Thu Jan 31 2019 Fedora Release Engineering <releng@fedoraproject.org> - 1.3.15-12
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_30_Mass_Rebuild
 
