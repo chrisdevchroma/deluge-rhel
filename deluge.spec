@@ -1,6 +1,6 @@
 Name:           deluge
 Version:        2.0.3
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        A GTK+ BitTorrent client with support for DHT, UPnP, and PEX
 License:        GPLv3 with exceptions
 URL:            http://deluge-torrent.org/
@@ -48,6 +48,7 @@ Requires:   rb_libtorrent-python3
 Requires:   python3-twisted
 Requires:   python3-GeoIP
 Requires:   python3-rencode
+Requires:   python3-service-identity
 
 
 %description common
@@ -241,6 +242,9 @@ exit 0
 %systemd_postun_with_restart deluge-web.service
 
 %changelog
+* Tue Sep 10 2019 Michael Cronenworth <mike@cchtml.com> - 2.0.3-4
+- Add requires on service identity (RHBZ#1655013)
+
 * Mon Aug 19 2019 Miro Hrončok <mhroncok@redhat.com> - 2.0.3-3
 - Rebuilt for Python 3.8
 
