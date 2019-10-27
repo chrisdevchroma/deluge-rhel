@@ -15,7 +15,12 @@ sudo dnf install rpmdevtools
 sudo dnf install python3-devel python3-wheel
 ```
 4. Build & install dependency rb_libtorrent & rb_libtorrent-python3 -> see https://github.com/chrisdevchroma/rb_libtorrent-rhel
+5. Build & install dependency python3-setproctitle -> see https://github.com/chrisdevchroma/python-setproctitle-rhel
+6. Build & install dependency python3-GeoIP-rhel -> see https://github.com/chrisdevchroma/python-GeoIP-rhel
 5. Clone repo with git and cd into the folder
+```bash
+cd deluge-rhel
+```
 6. Create build/SOURCES dir
 ```bash
 mkdir -p build/SOURCES
