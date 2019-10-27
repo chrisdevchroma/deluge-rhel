@@ -12,7 +12,7 @@ sudo dnf install rpmdevtools
 ```
 3. Install deluge build dependencies
 ```bash
-sudo dnf install python3-devel python3-wheel
+sudo dnf install python3-devel python3-wheel python3-pillow
 ```
 4. Build & install dependency rb_libtorrent & rb_libtorrent-python3 -> see https://github.com/chrisdevchroma/rb_libtorrent-rhel
 5. Build & install dependency python3-setproctitle -> see https://github.com/chrisdevchroma/python-setproctitle-rhel
