@@ -49,6 +49,7 @@ Requires:   python3-twisted
 Requires:   python3-GeoIP
 Requires:   python3-rencode
 Requires:   python3-service-identity
+Requires:   python3-pillow
 
 
 %description common
