@@ -29,7 +29,7 @@ mkdir -p build/SOURCES
 ```bash
 spectool -g -C build/SOURCES deluge.spec
 ```
-8. Copy .service files into build/SOURCES
+8. Copy *.service files into build/SOURCES
 ```bash
 cp *.service build/SOURCES
 ```
@@ -39,5 +39,14 @@ rpmbuild --define "_topdir `pwd`/build" -ba deluge.spec
 ```
 10. Install deluge packages
 ```bash
-sudo dnf install ./build/RPMS/x86_64/deluge*.rpm
+sudo dnf install ./build/RPMS/noarch/deluge*.rpm
+```
+```bash
+sudo dnf install ./build/RPMS/noarch/deluge-common-2.0.3-*.el8.noarch.rpm
+sudo dnf install ./build/RPMS/noarch/deluge-images-2.0.3-*.el8.noarch.rpm
+sudo dnf install ./build/RPMS/noarch/deluge-daemon-2.0.3-*.el8.noarch.rpm
+sudo dnf install ./build/RPMS/noarch/deluge-web-2.0.3-*.el8.noarch.rpm
+sudo dnf install ./build/RPMS/noarch/deluge-gtk-2.0.3-*.el8.noarch.rpm
+sudo dnf install ./build/RPMS/noarch/deluge-console-2.0.3-*.el8.noarch.rpm
+sudo dnf install ./build/RPMS/noarch/deluge-2.0.3-*.el8.noarch.rpm
 ```
