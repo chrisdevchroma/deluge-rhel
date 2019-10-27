@@ -14,7 +14,7 @@ sudo dnf install rpmdevtools
 ```bash
 sudo dnf install python3-devel python3-wheel
 ```
-4. Build deluge dependency rb_libtorrent-python3 -> see https://github.com/chrisdevchroma/rb_libtorrent-rhel
+4. Build & install dependency rb_libtorrent & rb_libtorrent-python3 -> see https://github.com/chrisdevchroma/rb_libtorrent-rhel
 5. Clone repo with git and cd into the folder
 6. Create build/SOURCES dir
 ```bash
@@ -24,7 +24,15 @@ mkdir -p build/SOURCES
 ```bash
 spectool -g -C build/SOURCES deluge.spec
 ```
-8. Build package with rpmbuild
+8. Copy .service files into build/SOURCES
 ```bash
- rpmbuild --define "_topdir `pwd`/build" -ba deluge.spec
- ```
+cp *.service build/SOURCES
+```
+9. Build package with rpmbuild
+```bash
+rpmbuild --define "_topdir `pwd`/build" -ba deluge.spec
+```
+10. Install deluge packages
+```bash
+sudo dnf install ./build/RPMS/x86_64/deluge*.rpm
+```
