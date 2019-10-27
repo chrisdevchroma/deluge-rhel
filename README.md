@@ -39,10 +39,9 @@ rpmbuild --define "_topdir `pwd`/build" -ba deluge.spec
 ```
 10. Install deluge packages
 ```bash
+# All packages
 sudo dnf install ./build/RPMS/noarch/deluge*.rpm
-```
-Or as seperate packages
-```bash
+# Seperate packages
 sudo dnf install ./build/RPMS/noarch/deluge-common-2.0.3-*.el8.noarch.rpm
 sudo dnf install ./build/RPMS/noarch/deluge-images-2.0.3-*.el8.noarch.rpm
 sudo dnf install ./build/RPMS/noarch/deluge-daemon-2.0.3-*.el8.noarch.rpm
