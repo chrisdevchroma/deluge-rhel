@@ -15,17 +15,16 @@ sudo dnf install rpmdevtools
 sudo dnf install python3-devel python3-wheel
 ```
 4. Build deluge dependency rb_libtorrent-python3 -> see https://github.com/chrisdevchroma/rb_libtorrent-python3-rhel
-4. Clone repo with git and cd into the folder
-5. Create build/SOURCES dir
+5. Clone repo with git and cd into the folder
+6. Create build/SOURCES dir
 ```bash
 mkdir -p build/SOURCES
 ```
-6. Download deluge source tarball with spectool
+7. Download deluge source tarball with spectool
 ```bash
 spectool -g -C build/SOURCES deluge.spec
 ```
-7. Build package with rpmbuild
+8. Build package with rpmbuild
 ```bash
  rpmbuild --define "_topdir `pwd`/build" -ba deluge.spec
  ```
- 
