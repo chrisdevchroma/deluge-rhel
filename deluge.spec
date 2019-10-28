@@ -1,6 +1,6 @@
 Name:           deluge
 Version:        2.0.3
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        A GTK+ BitTorrent client with support for DHT, UPnP, and PEX
 License:        GPLv3 with exceptions
 URL:            http://deluge-torrent.org/
@@ -242,6 +242,9 @@ exit 0
 %systemd_postun_with_restart deluge-web.service
 
 %changelog
+* Mon Oct 28 2019 Michael Cronenworth <mike@cchtml.com> - 2.0.3-5
+- Fix web service due to command argument change (RHBZ#1756658)
+
 * Tue Sep 10 2019 Michael Cronenworth <mike@cchtml.com> - 2.0.3-4
 - Add requires on service identity (RHBZ#1655013)
 
