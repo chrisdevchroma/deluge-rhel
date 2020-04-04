@@ -15,40 +15,36 @@ sudo dnf install rpmdevtools
 sudo dnf install python3-devel python3-wheel
 ```
 4. Build & install dependency rb_libtorrent & rb_libtorrent-python3 -> see https://github.com/chrisdevchroma/rb_libtorrent-rhel
-5. Build & install dependency python3-setproctitle -> see https://github.com/chrisdevchroma/python-setproctitle-rhel
-6. Build & install dependency python3-GeoIP -> see https://github.com/chrisdevchroma/python-GeoIP-rhel
-7. Build & install dependency python3-pygame -> see https://github.com/chrisdevchroma/pygame-rhel
-8. Build & install dependency python3-rencode -> see https://github.com/chrisdevchroma/python-rencode-rhel
-9. Clone repo with git and cd into the folder
+5. Clone repo with git and cd into the folder
 ```bash
 cd deluge-rhel
 ```
-10. Create build/SOURCES dir
+6. Create build/SOURCES dir
 ```bash
 mkdir -p build/SOURCES
 ```
-11. Download deluge source tarball with spectool
+7. Download deluge source tarball with spectool
 ```bash
 spectool -g -C build/SOURCES deluge.spec
 ```
-12. Copy *.service files into build/SOURCES
+8. Copy *.service files into build/SOURCES
 ```bash
 cp *.service build/SOURCES
 ```
-13. Build package with rpmbuild
+9. Build package with rpmbuild
 ```bash
 rpmbuild --define "_topdir `pwd`/build" -ba deluge.spec
 ```
-14. Install deluge packages
+10. Install deluge packages
 ```bash
 # All packages
 sudo dnf install ./build/RPMS/noarch/deluge*.rpm
 # Seperate packages
-sudo dnf install ./build/RPMS/noarch/deluge-common-2.0.3-*.el8.noarch.rpm
-sudo dnf install ./build/RPMS/noarch/deluge-images-2.0.3-*.el8.noarch.rpm
-sudo dnf install ./build/RPMS/noarch/deluge-daemon-2.0.3-*.el8.noarch.rpm
-sudo dnf install ./build/RPMS/noarch/deluge-web-2.0.3-*.el8.noarch.rpm
-sudo dnf install ./build/RPMS/noarch/deluge-gtk-2.0.3-*.el8.noarch.rpm
-sudo dnf install ./build/RPMS/noarch/deluge-console-2.0.3-*.el8.noarch.rpm
-sudo dnf install ./build/RPMS/noarch/deluge-2.0.3-*.el8.noarch.rpm
+sudo dnf install ./build/RPMS/noarch/deluge-common-*.el8.noarch.rpm
+sudo dnf install ./build/RPMS/noarch/deluge-images-*.el8.noarch.rpm
+sudo dnf install ./build/RPMS/noarch/deluge-daemon-*.el8.noarch.rpm
+sudo dnf install ./build/RPMS/noarch/deluge-web-*.el8.noarch.rpm
+sudo dnf install ./build/RPMS/noarch/deluge-gtk-*.el8.noarch.rpm
+sudo dnf install ./build/RPMS/noarch/deluge-console-*.el8.noarch.rpm
+sudo dnf install ./build/RPMS/noarch/deluge-2.*.el8.noarch.rpm
 ```
