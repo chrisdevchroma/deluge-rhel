@@ -2,6 +2,9 @@
 Forked from https://src.fedoraproject.org/rpms/deluge.git to build for RHEL/CentOS 8
 
 ## How to build
+See https://github.com/chrisdevchroma/build-packages-docker/blob/master/deluge.sh for a automated script.
+
+### Manual build
 1. Install the Development tools (includes rpm-build)
 ```bash
 sudo dnf group install "Development Tools"
@@ -46,5 +49,5 @@ sudo dnf install ./build/RPMS/noarch/deluge-daemon-*.el8.noarch.rpm
 sudo dnf install ./build/RPMS/noarch/deluge-web-*.el8.noarch.rpm
 sudo dnf install ./build/RPMS/noarch/deluge-gtk-*.el8.noarch.rpm
 sudo dnf install ./build/RPMS/noarch/deluge-console-*.el8.noarch.rpm
-sudo dnf install ./build/RPMS/noarch/deluge-2.*.el8.noarch.rpm
+sudo dnf install ./build/RPMS/noarch/deluge-[[:digit:]]*.el8.noarch.rpm
 ```
