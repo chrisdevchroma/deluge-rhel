@@ -46,7 +46,7 @@ Requires:   python3-setproctitle
 Requires:   python3-pyxdg
 Requires:   rb_libtorrent-python3
 Requires:   python3-twisted
-Requires:   python3-GeoIP
+Requires:   python3-geoip2
 Requires:   python3-rencode
 Requires:   python3-service-identity
 Requires:   python3-pillow
